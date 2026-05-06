@@ -117,13 +117,17 @@ Files placed:
   $TARGET/yukti-config.json  (per-project config — edit as needed)
 
 Skills are namespaced. Note: in the fallback (non-plugin) install, skills are
-project-local and invoked WITHOUT the plugin namespace prefix:
-  /smart <task>           (full pipeline)
-  /explore <task>         (find files only — Haiku)
-  /plan <task>            (produce plan — Opus)
-  /implement <phase>      (apply one phase — Sonnet)
-  /review                 (review diff — Opus)
-  /status [reset]         (project state brief; 'reset' clears in-flight task)
+project-local and invoked WITHOUT the plugin namespace prefix.
+
+Primary skills (4 you'll actually use):
+  /smart <task>           full pipeline; auto-routes code-changes vs analysis
+  /status [reset]         project brief on demand; 'reset' clears in-flight task
+  /plan <task>            produce a phased plan only — Opus
+  /review                 review the uncommitted diff — Opus
+
+Deprecated as standalone (still installed; internal pipeline stages):
+  /explore <task>         used as Step 1 of /smart; may be removed in v0.3
+  /implement <phase>      used as Step 4 of /smart; may be removed in v0.3
 
 If you used the marketplace install instead, prefix skills with the plugin
 namespace, e.g. /yukti:smart.

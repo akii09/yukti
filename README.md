@@ -47,7 +47,7 @@ Run inside any Claude Code session:
 /plugin install yukti@akii09-yukti
 ```
 
-Yukti is installed once at the user level and available across **every** project you open with Claude Code. Skills are namespaced (`/yukti:smart`, `/yukti:plan`, `/yukti:explore`, `/yukti:implement`, `/yukti:review`) so they never collide with other plugins or future built-in commands.
+Yukti is installed once at the user level and available across **every** project you open with Claude Code. Skills are namespaced (`/yukti:smart`, `/yukti:status`, `/yukti:plan`, `/yukti:review`) so they never collide with other plugins or future built-in commands.
 
 To upgrade later:
 ```
@@ -100,16 +100,21 @@ That's it. The orchestrator will:
 5. Run the reviewer (Opus) on the final diff
 6. Report the result
 
-If you want to run individual stages (e.g. just plan, or just review):
+### Skills (4 you'll actually use)
 
 | Command | What it does | Model |
 |---------|-------------|-------|
-| `/yukti:explore <task>` | Find files only | Haiku |
-| `/yukti:plan <task>` | Produce plan only | Opus |
-| `/yukti:implement <phase>` | Apply one phase | Sonnet |
-| `/yukti:review` | Review uncommitted diff | Opus |
-| `/yukti:smart <task>` | Full pipeline (auto-routes) | mixed |
-| `/yukti:status [reset]` | Show project brief on demand; `reset` clears in-flight task | (no model) |
+| `/yukti:smart <task>` | **Primary entry point.** Auto-routes: code-change → full pipeline; analysis → answered directly in the same session. | mixed |
+| `/yukti:status [reset]` | Show project brief on demand; with `reset` clears the in-flight task. Also surfaces telemetry savings if `telemetry: "local"` is set. | (no model) |
+| `/yukti:plan <task>` | Produce a phased plan only — no implementation. | Opus |
+| `/yukti:review` | Review the uncommitted diff. | Opus |
+
+**Deprecated standalone skills** (still installed, internal use only):
+
+| Command | Status |
+|---------|--------|
+| `/yukti:explore <task>` | The `explorer` agent runs as Step 1 of `/yukti:smart`. Direct invocation rarely useful. **May be removed in v0.3.** |
+| `/yukti:implement <phase>` | The `implementer` agent runs as Step 4 of `/yukti:smart` per phase. Standalone invocation requires constructing the phase metadata yourself. **May be removed in v0.3.** |
 
 A **session brief** also auto-injects on Claude Code start (branch, git status, in-flight Yukti task, memory mechanisms). It complements the auto-loaded `CLAUDE.md` — it doesn't duplicate it. Disable with `"briefEnabled": false` in `.claude/yukti-config.json`.
 
@@ -127,7 +132,7 @@ A **session brief** also auto-injects on Claude Code start (branch, git status, 
 
 **You don't need to phrase things in any particular way.** The skill classifies and acts. If it picks wrong, the planner has a defense-in-depth check that catches misclassifications. **It will never refuse you.**
 
-If you want to bypass auto-routing and call a stage directly, the individual skills (`/yukti:explore`, `/yukti:plan`, `/yukti:implement`, `/yukti:review`) are explicit overrides.
+If you want to bypass auto-routing and call a stage directly, `/yukti:plan` and `/yukti:review` are the recommended explicit overrides. (`/yukti:explore` and `/yukti:implement` are deprecated as standalone — see "Skills" above.)
 
 ## Configuration
 
