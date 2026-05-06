@@ -1,18 +1,42 @@
 ---
+const builtIn = [
+  {
+    name: 'CLAUDE.md',
+    role: 'Project conventions',
+    blurb: 'Hand-written project instructions Claude Code auto-loads at every session start. The session brief mentions it; the planner and implementer inherit it. Yukti never duplicates it.',
+    docsUrl: 'https://code.claude.com/docs/en/memory.md',
+    docsLabel: 'docs',
+  },
+  {
+    name: 'Auto memory',
+    role: 'Cross-session learnings (built-in)',
+    blurb: 'Claude itself writes notes at ~/.claude/projects/<key>/memory/MEMORY.md (Claude Code 2.1.59+). The session brief reports active state; Yukti reads, never writes.',
+    docsUrl: 'https://code.claude.com/docs/en/memory.md',
+    docsLabel: 'docs',
+  },
+  {
+    name: '/model opusplan',
+    role: 'Built-in advisor strategy',
+    blurb: "Opus plans, Sonnet executes — built into Claude Code. Yukti's pipeline goes deeper (5 stages with explore + review + user-confirm). Complementary, not redundant.",
+    docsUrl: 'https://claude.com/blog/the-advisor-strategy',
+    docsLabel: 'blog',
+  },
+];
+
 const partners = [
   {
     name: 'claude-mem',
     by: 'thedotmack',
     url: 'https://github.com/thedotmack/claude-mem',
-    role: 'Cross-session memory',
-    blurb: 'Preserves context across coding sessions — semantic summaries, smart search, citations. Yukti reads from it when present so the planner has yesterday\'s decisions in scope.',
+    role: 'Richer cross-session memory',
+    blurb: "SQLite + Chroma vector DB, semantic search, citations, web viewer. Useful if CLAUDE.md and built-in auto memory aren't enough. Yukti detects it and yields the memory layer to it.",
   },
   {
     name: 'code-review-graph',
     by: 'tirth8205',
     url: 'https://github.com/tirth8205/code-review-graph',
     role: 'Structural review',
-    blurb: 'Tree-sitter AST graph + blast-radius analysis. ~8× token reduction on reviews by reading only the files actually affected. Future Yukti versions can use it for explorer-stage queries.',
+    blurb: 'Tree-sitter AST graph + blast-radius analysis. ~8× token reduction on reviews by reading only impacted files. Future v0.3 integration in the explorer stage; safe to install alongside today.',
   },
 ];
 ---
@@ -23,9 +47,27 @@ const partners = [
     <h2 id="composes-h" data-reveal>Yukti is the routing layer. We don't reinvent the rest.</h2>
 
     <p class="composes-lead" data-reveal>
-      Memory and structural code analysis are real, hard problems. Other plugins solve them well. Yukti recommends installing them alongside instead of building inferior copies inside.
+      Memory, project conventions, structural code analysis, advisor-style routing — these are real, hard problems. Claude Code itself ships several of them; other plugins solve the rest well. Yukti detects them, complements them, and never tries to replace them.
     </p>
 
+    <h3 class="composes-subhead" data-reveal>Built into Claude Code</h3>
+    <div class="composes-grid">
+      {builtIn.map((b) => (
+        <article class="partner partner--builtin" data-reveal>
+          <div class="partner-head">
+            <span class="partner-role">{b.role}</span>
+            <a class="partner-arrow" href={b.docsUrl} target="_blank" rel="noopener" aria-label={`${b.name} docs`}>{b.docsLabel} →</a>
+          </div>
+          <h4>
+            <span class="partner-name">{b.name}</span>
+            <span class="partner-by">built-in</span>
+          </h4>
+          <p>{b.blurb}</p>
+        </article>
+      ))}
+    </div>
+
+    <h3 class="composes-subhead" data-reveal>Third-party plugins worth installing alongside</h3>
     <div class="composes-grid">
       {partners.map((p) => (
         <a class="partner" href={p.url} target="_blank" rel="noopener" data-reveal>
@@ -33,10 +75,10 @@ const partners = [
             <span class="partner-role">{p.role}</span>
             <span class="partner-arrow" aria-hidden="true">→</span>
           </div>
-          <h3>
+          <h4>
             <span class="partner-name">{p.name}</span>
             <span class="partner-by">by {p.by}</span>
-          </h3>
+          </h4>
           <p>{p.blurb}</p>
         </a>
       ))}
@@ -51,6 +93,19 @@ const partners = [
     color: var(--ink-soft);
     max-width: 64ch;
     margin: 1.25rem 0 2.5rem;
+  }
+
+  .composes-subhead {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--grey);
+    margin: 0 0 1rem;
+  }
+  .composes-subhead:not(:first-of-type) {
+    margin-top: 2.5rem;
   }
 
   .composes-grid {
@@ -69,17 +124,22 @@ const partners = [
     text-decoration: none;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   }
-  .partner:hover {
+  a.partner:hover {
     transform: translate(-2px, -2px);
     box-shadow: 4px 4px 0 var(--ink);
     border-color: var(--ink);
     text-decoration: none;
   }
 
+  .partner--builtin {
+    border-style: dashed;
+  }
+
   .partner-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.65rem;
   }
   .partner-role {
@@ -90,15 +150,21 @@ const partners = [
   }
   .partner-arrow {
     color: var(--grey);
-    font-size: 1rem;
+    font-size: 0.86rem;
     transition: transform 0.25s ease, color 0.25s ease;
+    text-decoration: none;
   }
-  .partner:hover .partner-arrow {
+  a.partner:hover .partner-arrow {
     transform: translateX(4px);
     color: var(--ink);
   }
+  a.partner-arrow:hover {
+    color: var(--ink);
+    text-decoration: underline wavy var(--accent);
+    text-underline-offset: 3px;
+  }
 
-  .partner h3 {
+  .partner h4 {
     font-family: var(--font-body);
     font-weight: 700;
     font-size: 1.05rem;

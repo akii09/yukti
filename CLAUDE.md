@@ -233,6 +233,21 @@ When changing `bin/yukti-route-hint.sh` or its config field:
 4. **`"auto"` mode is honestly labeled as best-effort.** Claude Code hooks cannot directly invoke an agent. The hint is a strong suggestion to the main agent — never a guaranteed route. Documentation must say so.
 5. **Coexists with other plugins' UserPromptSubmit hooks** without ordering dependency (per Claude Code docs: "all matching hooks run in parallel").
 
+### Ecosystem composition (positioning lock)
+
+Yukti is the **routing layer**. It does not own memory, structural code analysis, or general advisor-strategy routing. Other Claude Code features and plugins handle those better. **When considering a new feature, check this matrix first**:
+
+| Concern | Owned by | Yukti's stance |
+|---|---|---|
+| Project conventions, build commands, naming | **CLAUDE.md** (built-in) | Read it via main session — never duplicate |
+| Cross-session decisions / patterns / learnings | **Auto memory** (built-in, Claude Code 2.1.59+) | Detect presence, surface in brief — never write to it |
+| Richer memory: semantic search, citations, web viewer | **claude-mem** (third-party) | Detect presence, yield the memory layer — install alongside, don't compete |
+| Plan-then-implement model switching at session level | **`/model opusplan`** (built-in) | Yukti's pipeline goes deeper (5 stages incl. explore + review + user-confirm); complementary, not redundant |
+| Structural code graph / blast-radius analysis | **code-review-graph** (third-party) | Documentation-only acknowledgment in v0.2.0; future explorer integration in v0.3 |
+| Multi-stage routing across Haiku/Sonnet/Opus | **Yukti** | This is our layer. Defend the architecture; don't bloat it. |
+
+**Rule for v0.2.x and beyond**: if a proposed feature falls into one of the rows above where Yukti is NOT listed as the owner, prefer composing with the existing solution over building our own. Document the composition in this table and in `web/src/components/PlaysWellWith.astro`. Don't copy what other plugins / built-ins already do well.
+
 When changing the schema or output format of any of these, update both writers AND readers in the same logical change.
 
 For the web's own working rules (stack, what's locked, what's editable, performance budget, deploy), see [`web/CLAUDE.md`](web/CLAUDE.md).

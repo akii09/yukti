@@ -184,6 +184,36 @@ Telemetry is **opt-in**, **local-only**, and **never transmits anything**.
 - Run `/yukti:status` to see your cumulative savings (last 30 days by default). The skill calls `bin/yukti-savings-summary.sh`, which reads the local log and prints a summary — no upload anywhere.
 - To delete: `rm ~/.claude/yukti-telemetry.jsonl`. To stop logging: set telemetry back to `"off"`.
 
+## Plays well with the Claude Code ecosystem
+
+Yukti is the *routing layer*. It deliberately doesn't try to be everything. Other Claude Code features and plugins handle adjacent concerns better — Yukti detects them and complements rather than duplicates.
+
+### Built into Claude Code (already there)
+
+| Mechanism | Yukti's relationship |
+|---|---|
+| **CLAUDE.md** ([docs](https://code.claude.com/docs/en/memory.md)) — your hand-written project instructions, auto-loaded at every session start | The session brief mentions if `CLAUDE.md` is present but does **not** duplicate its content. The orchestrator's planner/implementer subagents inherit it through the normal Claude Code mechanism. |
+| **Auto memory** (Claude Code v2.1.59+) — Claude itself writes notes at `~/.claude/projects/<key>/memory/MEMORY.md` | The session brief detects whether the file exists and reports `auto memory (active, N lines)` or `auto memory (built-in, no entries yet)`. We don't write to it; that's Claude's job. |
+| **`/model opusplan`** ([Anthropic blog](https://claude.com/blog/the-advisor-strategy)) — built-in advisor strategy: Opus for plan, Sonnet for execution | Yukti's pipeline goes deeper: 5 stages (explore → plan → confirm → implement → review) vs `opusplan`'s 2 stages. Yukti also adds the user-confirmation gate. The two are complementary — `/yukti:smart` and `/model opusplan` can both be active in the same session without conflict. |
+
+### Third-party plugins worth installing alongside
+
+| Plugin | What it adds | How Yukti detects it |
+|---|---|---|
+| [`claude-mem`](https://github.com/thedotmack/claude-mem) | Richer cross-session memory: SQLite + Chroma vector DB, semantic search, `mem-search` skill, web viewer UI. Useful if you want more than CLAUDE.md and built-in auto memory provide. | Session brief reports `claude-mem (detected)` if `~/.claude-mem/` or `.claude/claude-mem-config.json` exists. We let it own memory; we don't fight it. |
+| [`code-review-graph`](https://github.com/tirth8205/code-review-graph) | Tree-sitter AST graph of your codebase + blast-radius analysis (which files are *actually* affected by a change). Reports ~8× token reduction on reviews. Standalone CLI + MCP, integrates via Model Context Protocol. | No code-level integration in v0.2.0 — documentation only. Future v0.3 may use the graph for explorer queries instead of grep/glob. Install today; Yukti won't conflict. |
+
+### Composition matrix
+
+| Scenario | Built-in CLAUDE.md | Built-in auto memory | claude-mem | code-review-graph | Yukti `/yukti:smart` |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Project conventions (lint rules, build commands, naming) | ✅ best fit | — | — | — | reads via main session |
+| "What did we decide about X last week?" | — | ✅ basic | ✅ better | — | reads if surfaced |
+| "Which files change if I touch `auth.ts`?" | — | — | — | ✅ best | future v0.3 integration |
+| "Add CSV export to schedule page" | — | — | — | — | ✅ best fit |
+
+**The honest take**: install Yukti for routing. Install (or just use) claude-mem and code-review-graph for the things they do well. None of these compete; they stack.
+
 ## Benchmarks
 
 > **Status: illustrative — validation in progress.** The numbers below are *target* costs based on Anthropic's published per-model pricing applied to typical token mixes for each task type. They are **not** measurements from actual usage. **v0.2.0** ships local opt-in telemetry so the next version of this section will be backed by real data.
