@@ -1,0 +1,20 @@
+{
+  "name": "yukti",
+  "version": "0.1.0",
+  "description": "Lightweight Claude Code plugin that routes work to the right model (Haiku/Sonnet/Opus) and enforces token-saving practices. ~50-60% cost reduction with quality preserved.",
+  "author": {
+    "name": "Akash Ree",
+    "email": "akashpise588@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/akashree/yukti",
+  "repository": "https://github.com/akashree/yukti",
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "optimization",
+    "token-saving",
+    "subagents",
+    "routing"
+  ]
+}

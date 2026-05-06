@@ -1,0 +1,14 @@
+{
+  "name": "yukti",
+  "owner": {
+    "name": "Akash Ree",
+    "email": "akashpise588@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "yukti",
+      "source": ".",
+      "description": "Token-saving plugin: routes tasks to Haiku/Sonnet/Opus based on stage, enforces edit-not-rewrite, caps file reads, runs verification gates."
+    }
+  ]
+}

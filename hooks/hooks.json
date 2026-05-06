@@ -1,0 +1,25 @@
+{
+  "PreToolUse": [
+    {
+      "matcher": "Read",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/bin/cap-read.sh",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/bin/stop-verify.sh",
+          "timeout": 60
+        }
+      ]
+    }
+  ]
+}
