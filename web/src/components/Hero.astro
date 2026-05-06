@@ -30,7 +30,16 @@ import Logo from './Logo.astro';
     <div class="hero-cta" data-reveal>
       <button class="install-cmd" type="button" aria-label="Copy install command">
         <code>/plugin marketplace add akii09/yukti</code>
-        <span class="copy-hint" aria-hidden="true">click to copy</span>
+        <span class="copy-hint" aria-hidden="true">
+          <svg class="hero-copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <rect x="8" y="8" width="12" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 6 V 4 a 2 2 0 0 0 -2 -2 H 6 a 2 2 0 0 0 -2 2 v 12 a 2 2 0 0 0 2 2 h 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg class="hero-check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12 L 10 17 L 20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="copy-hint-text">copy</span>
+        </span>
       </button>
       <a href="https://github.com/akii09/yukti" class="btn btn--ghost" target="_blank" rel="noopener">
         View on GitHub →
@@ -113,14 +122,22 @@ import Logo from './Logo.astro';
   }
   .install-cmd code { background: transparent; border: 0; padding: 0; color: inherit; font-size: inherit; }
   .copy-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32rem;
     font-family: var(--font-body);
     font-size: 0.78rem;
-    opacity: 0.55;
+    opacity: 0.65;
     border-left: 1px solid var(--grey);
     padding-left: 0.65rem;
   }
-  .install-cmd.is-copied .copy-hint { color: var(--accent-soft); opacity: 1; }
-  .install-cmd.is-copied .copy-hint::after { content: ' ✓'; }
+  .copy-hint .hero-check-icon { display: none; }
+  .install-cmd.is-copied .copy-hint {
+    color: var(--accent-soft);
+    opacity: 1;
+  }
+  .install-cmd.is-copied .copy-hint .hero-copy-icon { display: none; }
+  .install-cmd.is-copied .copy-hint .hero-check-icon { display: inline-block; }
 
   .hero-foot {
     color: var(--grey);
@@ -140,15 +157,13 @@ import Logo from './Logo.astro';
       try {
         await navigator.clipboard.writeText(code.textContent ?? '');
         btn.classList.add('is-copied');
-        const hint = btn.querySelector('.copy-hint');
-        if (hint) {
-          const original = hint.textContent;
-          hint.textContent = 'copied';
-          setTimeout(() => {
-            btn.classList.remove('is-copied');
-            hint.textContent = original;
-          }, 1600);
-        }
+        const text = btn.querySelector('.copy-hint-text');
+        const original = text?.textContent ?? 'copy';
+        if (text) text.textContent = 'copied';
+        setTimeout(() => {
+          btn.classList.remove('is-copied');
+          if (text) text.textContent = original;
+        }, 1600);
       } catch (err) {
         // Clipboard API may be unavailable on insecure origins; ignore quietly.
       }
