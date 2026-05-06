@@ -1,7 +1,7 @@
 {
   "name": "yukti",
-  "version": "0.1.0",
-  "description": "Lightweight Claude Code plugin that routes work to the right model (Haiku/Sonnet/Opus) and enforces token-saving practices. ~50-60% cost reduction with quality preserved.",
+  "version": "0.2.0",
+  "description": "Token-saving Claude Code plugin: routes work across Haiku/Sonnet/Opus per pipeline stage. Adds session-start brief, opt-in local telemetry with savings dashboard, and advisory routing hints. Composes with built-in CLAUDE.md + auto memory and with claude-mem / code-review-graph.",
   "author": {
     "name": "akii09",
     "email": "hi@akashpise.com"
