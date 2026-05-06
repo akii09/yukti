@@ -38,7 +38,7 @@ const year = new Date().getFullYear();
   </div>
 
   <div class="footer-bottom">
-    <span>© {year} akii09 · MIT</span>
+    <span>© {year} akii09 · MIT · <a href="https://github.com/akii09/yukti/releases" target="_blank" rel="noopener" class="footer-version">v0.2.0</a></span>
     <span class="footer-credit">Made with care, not magic.</span>
   </div>
 </footer>
@@ -97,6 +97,16 @@ const year = new Date().getFullYear();
     gap: 0.75rem;
     color: #71717a;
     font-size: 0.84rem;
+  }
+  .footer-version {
+    font-family: var(--font-mono);
+    color: var(--accent-soft);
+    text-decoration: none;
+  }
+  .footer-version:hover {
+    color: var(--paper);
+    text-decoration: underline wavy var(--accent);
+    text-underline-offset: 3px;
   }
   .footer-credit {
     font-family: var(--font-display);

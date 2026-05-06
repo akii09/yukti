@@ -1,21 +1,26 @@
 ---
-const installs = [
+const tabs = [
   {
+    id: 'install-marketplace',
     label: 'Marketplace',
-    recommended: true,
+    pill: 'recommended',
     cmds: [
       '/plugin marketplace add akii09/yukti',
       '/plugin install yukti@akii09-yukti',
     ],
-    note: 'Run inside any Claude Code session. Installs once, available across every project. Skills are namespaced (/yukti:smart, /yukti:plan, …).',
+    note: 'Run inside any Claude Code session. Installs once at the user level — available across every project. Skills are namespaced (/yukti:smart, /yukti:status, /yukti:plan, /yukti:review).',
   },
   {
-    label: 'Per-project (curl)',
+    id: 'install-curl',
+    label: 'Per-project',
+    pill: null,
     cmds: ['curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash'],
-    note: 'For locked-down envs without marketplace access, or when you want Yukti pinned in one specific repo. Skills are NOT namespaced in this mode.',
+    note: 'For locked-down environments without marketplace access, or when you want Yukti pinned in one specific repo. Skills are NOT namespaced in this mode (e.g. /smart instead of /yukti:smart).',
   },
   {
+    id: 'install-dev',
     label: 'Plugin development',
+    pill: null,
     cmds: [
       'git clone https://github.com/akii09/yukti.git',
       'claude --plugin-dir ./yukti',
@@ -25,32 +30,52 @@ const installs = [
 ];
 
 const examples = [
-  { input: '/yukti:smart Add a CSV export to the schedule page', kind: 'code change', goes: 'full pipeline (explore → plan → confirm → implement → review)' },
-  { input: '/yukti:smart Compare @plan-a.md and @plan-b.md, which is current?', kind: 'analysis', goes: 'answered directly in your current session' },
-  { input: '/yukti:smart Where is the auth middleware defined?', kind: 'file location', goes: 'forwarded to the explorer (Haiku, fast)' },
-  { input: '/yukti:smart Produce a plan to migrate moment → date-fns', kind: 'plan only', goes: 'forwarded to the planner (Opus)' },
+  { input: '/yukti:smart Add a CSV export to the schedule page', kind: 'code change', goes: 'full pipeline: explore → plan → confirm → implement → review' },
+  { input: '/yukti:smart Compare these two plans, which is current?', kind: 'analysis', goes: 'answered directly in your current session' },
+  { input: '/yukti:plan Migrate moment → date-fns', kind: 'plan only', goes: 'forwarded to the planner (Opus)' },
+  { input: '/yukti:status', kind: 'project brief', goes: 'branch, uncommitted changes, in-flight task; savings if telemetry is on' },
 ];
 ---
 
 <section class="get-started" id="get-started" aria-labelledby="gs-h">
   <div class="container">
     <span class="eyebrow" data-reveal>Get started</span>
-    <h2 id="gs-h" data-reveal>Three ways to install. The first works for almost everyone.</h2>
+    <h2 id="gs-h" data-reveal>Three install paths. Pick one.</h2>
 
-    <div class="install-grid" data-reveal>
-      {installs.map((opt) => (
-        <article class={`install-card ${opt.recommended ? 'install-card--rec' : ''}`}>
-          <header>
-            <h3>{opt.label}</h3>
-            {opt.recommended && <span class="rec-tag">recommended</span>}
-          </header>
-          <pre><code>{opt.cmds.join('\n')}</code></pre>
-          <p>{opt.note}</p>
-        </article>
+    <div class="install-tabs" data-reveal role="region" aria-label="Installation method">
+      {/* Radios live as direct siblings of .tab-labels and .tab-panels so the
+          CSS general-sibling selector (~) can flip the active tab without JS. */}
+      {tabs.map((t, i) => (
+        <input
+          type="radio"
+          name="install-tab"
+          id={t.id}
+          class="tab-radio"
+          checked={i === 0 ? true : undefined}
+          aria-label={t.label}
+        />
       ))}
+
+      <div class="tab-labels" role="tablist" aria-label="Installation method">
+        {tabs.map((t) => (
+          <label for={t.id} class="tab-label" role="tab">
+            <span class="tab-label-text">{t.label}</span>
+            {t.pill && <span class="tab-pill">{t.pill}</span>}
+          </label>
+        ))}
+      </div>
+
+      <div class="tab-panels">
+        {tabs.map((t) => (
+          <div class={`tab-panel tab-panel--${t.id}`} role="tabpanel" aria-labelledby={t.id}>
+            <pre><code>{t.cmds.join('\n')}</code></pre>
+            <p class="tab-note">{t.note}</p>
+          </div>
+        ))}
+      </div>
     </div>
 
-    <h3 class="usage-h" data-reveal>Then just type what you want.</h3>
+    <h3 class="usage-h" data-reveal>What you can type</h3>
 
     <ul class="examples" data-reveal>
       {examples.map((ex) => (
@@ -74,64 +99,153 @@ const examples = [
 <style>
   .get-started { background: var(--paper); }
 
-  .install-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.25rem;
-    margin: 2rem 0 3.5rem;
+  /* === Tabs (CSS-only via radio inputs) === */
+  .install-tabs {
+    margin: 2rem 0 3rem;
+    position: relative;
   }
 
-  .install-card {
-    background: var(--paper-2);
-    border: 1.5px solid var(--grey-line);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .install-card--rec {
-    border-color: var(--ink);
-    box-shadow: 4px 4px 0 var(--accent);
-  }
-  .install-card header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-  .install-card h3 {
-    font-family: var(--font-body);
-    font-size: 1.05rem;
-    font-weight: 700;
+  /* Hide the radios themselves but keep them in normal flow position so
+     focus rings can be approximated via :has() on the label. */
+  .tab-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    /* Avoid layout shift / scroll jump on focus */
+    top: 0;
+    left: 0;
     margin: 0;
-    color: var(--ink);
   }
-  .rec-tag {
-    font-size: 0.74rem;
+
+  .tab-labels {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    border-bottom: 1.5px solid var(--grey-line);
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  .tab-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.05rem;
+    border: 1.5px solid transparent;
+    border-bottom: 0;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    background: transparent;
+    color: var(--grey);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    margin-bottom: -1.5px; /* overlap the underline border on the active tab */
+    user-select: none;
+    position: relative;
+  }
+  .tab-label:hover {
+    color: var(--ink);
+    background: var(--paper-2);
+  }
+  .tab-label:active { transform: translateY(1px); }
+
+  .tab-pill {
+    font-size: 0.68rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--accent-ink);
     background: var(--accent-soft);
-    padding: 0.18rem 0.5rem;
+    padding: 0.14rem 0.5rem;
     border-radius: 999px;
-  }
-  .install-card pre {
-    margin: 0;
-    font-size: 0.84rem;
-    padding: 0.85rem 1rem;
-  }
-  .install-card p {
-    color: var(--grey);
-    font-size: 0.9rem;
-    line-height: 1.55;
-    margin: 0;
+    line-height: 1.4;
   }
 
+  /* All panels hidden by default */
+  .tab-panel { display: none; }
+
+  /* Wrapper that holds the panels (also wraps the active styling) */
+  .tab-panels {
+    background: var(--paper-2);
+    border: 1.5px solid var(--grey-line);
+    border-top-color: transparent; /* visually merges with the active tab */
+    border-radius: 0 var(--radius) var(--radius) var(--radius);
+    padding: 1.4rem 1.4rem 1.5rem;
+  }
+
+  /* Active state: the radio that is :checked decides which label is active
+     and which panel is visible. Selectors rely on the radios being DIRECT
+     siblings of .tab-labels and .tab-panels (no fieldset wrapper).
+
+     IMPORTANT: each :checked rule lives in its OWN ruleset. Comma-grouping
+     these triggers an Astro CSS scoper bug that drops the leading
+     `#id:checked ~` from the first selector — making one tab always appear
+     active. Verbose but correct. */
+
+  #install-marketplace:checked ~ .tab-labels label[for="install-marketplace"] {
+    color: var(--ink);
+    background: var(--paper-2);
+    border-color: var(--grey-line);
+    border-bottom-color: var(--paper-2);
+  }
+  #install-curl:checked ~ .tab-labels label[for="install-curl"] {
+    color: var(--ink);
+    background: var(--paper-2);
+    border-color: var(--grey-line);
+    border-bottom-color: var(--paper-2);
+  }
+  #install-dev:checked ~ .tab-labels label[for="install-dev"] {
+    color: var(--ink);
+    background: var(--paper-2);
+    border-color: var(--grey-line);
+    border-bottom-color: var(--paper-2);
+  }
+
+  #install-marketplace:checked ~ .tab-panels .tab-panel--install-marketplace {
+    display: block;
+  }
+  #install-curl:checked ~ .tab-panels .tab-panel--install-curl {
+    display: block;
+  }
+  #install-dev:checked ~ .tab-panels .tab-panel--install-dev {
+    display: block;
+  }
+
+  /* Keyboard focus ring on the label paired with the focused radio.
+     Same split-rule workaround for the Astro scoping bug. */
+  #install-marketplace:focus-visible ~ .tab-labels label[for="install-marketplace"] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  #install-curl:focus-visible ~ .tab-labels label[for="install-curl"] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  #install-dev:focus-visible ~ .tab-labels label[for="install-dev"] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .tab-panel pre {
+    margin: 0 0 1rem;
+    font-size: 0.92rem;
+    padding: 0.95rem 1.1rem;
+  }
+  .tab-note {
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  /* === Usage examples === */
   .usage-h {
-    margin: 0 0 1.5rem;
-    font-size: clamp(1.6rem, 3vw, 2rem);
+    margin: 0 0 1.25rem;
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
   }
 
   .examples {
@@ -140,21 +254,21 @@ const examples = [
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.7rem;
+    gap: 0.65rem;
   }
   .example {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) auto minmax(0, 2fr);
+    grid-template-columns: minmax(0, 1.6fr) auto minmax(0, 2fr);
     gap: 0.85rem;
     align-items: center;
     background: var(--paper-2);
     border: 1px solid var(--grey-line);
     border-radius: var(--radius);
-    padding: 0.85rem 1rem;
+    padding: 0.8rem 1rem;
   }
   .example-input {
     font-family: var(--font-mono);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     background: transparent;
     border: 0;
     padding: 0;
@@ -171,7 +285,7 @@ const examples = [
   .example-kind {
     font-family: var(--font-display);
     color: var(--accent-ink);
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     line-height: 1;
   }
   .example-goes {
@@ -185,5 +299,8 @@ const examples = [
       text-align: left;
     }
     .example-arrow { display: none; }
+    .tab-label { font-size: 0.88rem; padding: 0.55rem 0.85rem; }
+    .tab-pill { font-size: 0.62rem; padding: 0.1rem 0.4rem; }
+    .tab-panels { padding: 1.1rem 1.1rem 1.2rem; }
   }
 </style>

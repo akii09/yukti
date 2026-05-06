@@ -1,8 +1,8 @@
 ---
 const claims = [
   {
-    headline: 'Real cost savings, with receipts',
-    body: 'Routing each pipeline stage to the right model (Haiku for exploration, Sonnet for implementation, Opus for planning + review) cuts cost by ~50–60% vs. always-Opus on routine code work. We publish honest benchmarks below — including cases where Yukti barely helps.',
+    headline: 'Designed to reduce cost on routine work',
+    body: 'Each pipeline stage runs on the cheapest model that does the step well — Haiku for exploration, Sonnet for implementation, Opus for planning and review. Numbers in the benchmarks section are illustrative; real measurement is in progress (v0.2.0 ships opt-in local telemetry).',
     icon: 'savings',
   },
   {
@@ -17,18 +17,18 @@ const claims = [
   },
   {
     headline: 'Hard gates where they matter',
-    body: 'After the planner produces a plan, the orchestrator stops and asks you to approve. That\'s the single highest-leverage quality gate in the system. The user-confirmation step cannot be skipped.',
+    body: 'After the planner produces a plan, the orchestrator stops and asks you to approve. That is the single highest-leverage quality gate in the system. The user-confirmation step cannot be skipped.',
     icon: 'gate',
   },
   {
-    headline: 'No undocumented bets',
-    body: 'Yukti deliberately avoids features whose behavior depends on undocumented Claude Code internals. No silent auto-routing, no hard Stop-hook gates, no MCP search server. If we can\'t verify a feature against the docs, it doesn\'t ship in v1.',
-    icon: 'docs',
+    headline: 'Knows your project state',
+    body: 'On every Claude Code session start, Yukti shows a short brief: branch, uncommitted changes, recent commits, your last in-flight Yukti task, and which memory mechanisms are active. Complements the auto-loaded CLAUDE.md and built-in auto memory — never duplicates them.',
+    icon: 'brief',
   },
   {
-    headline: 'Honest about its limits',
-    body: 'Yukti shines on adding/refactoring/fixing in well-organized code. It\'s weaker on gnarly novel debugging where most of the work is Opus reasoning anyway. The README and this site say so plainly. We will not lie about benchmarks.',
-    icon: 'honest',
+    headline: 'Local-only savings dashboard, opt-in',
+    body: 'Set "telemetry": "local" in yukti-config.json and Yukti logs per-task cost data to a file in your home directory. Run /yukti:status to see your cumulative savings (last 30 days, by task class). Default off; never uploaded.',
+    icon: 'chart',
   },
 ];
 
@@ -42,10 +42,12 @@ function iconPath(name: string) {
       return 'M 6 22 L 18 22 L 22 12 L 28 32 L 32 22 L 42 22';
     case 'gate':
       return 'M 10 18 L 22 12 L 34 18 M 10 18 L 10 30 L 22 36 L 34 30 L 34 18 M 22 12 L 22 36';
-    case 'docs':
-      return 'M 12 8 L 32 8 L 32 36 L 12 36 Z M 16 16 L 28 16 M 16 22 L 28 22 M 16 28 L 24 28';
-    case 'honest':
-      return 'M 22 6 C 30 14, 30 22, 22 30 C 14 22, 14 14, 22 6 Z M 22 14 L 22 24';
+    case 'brief':
+      // Document with header line + body lines (project brief)
+      return 'M 10 8 L 30 8 L 30 36 L 10 36 Z M 14 14 L 26 14 M 14 20 L 26 20 M 14 26 L 22 26 M 14 32 L 24 32';
+    case 'chart':
+      // Three rising bars (savings dashboard)
+      return 'M 8 32 L 14 32 L 14 24 L 8 24 Z M 18 32 L 24 32 L 24 16 L 18 16 Z M 28 32 L 34 32 L 34 20 L 28 20 Z M 6 36 L 36 36';
     default:
       return '';
   }

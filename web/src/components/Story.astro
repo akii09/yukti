@@ -18,15 +18,21 @@ const milestones = [
     body: 'Removed the forking front-door entirely. /yukti:smart is now a non-forked skill — its routing logic runs in your existing Claude Code session, no extra fork. Analysis questions answered at plain-chat speed. Code changes still fork to the specialist pipeline (justified — that\'s where the savings live).',
     lesson: 'For routing, the fastest fork is no fork.',
   },
+  {
+    version: 'v0.2.0',
+    title: 'Session companion',
+    body: 'Layered five capabilities on top of v0.1.3\'s stable architecture: a session-start brief (branch, in-flight task, memory mechanisms), state file across sessions, opt-in local telemetry with a savings read-out, advisory routing hints, and explicit composition with built-in CLAUDE.md, auto memory, and adjacent plugins.',
+    lesson: 'Compose with what already exists. Yukti is the routing layer — memory, code graphs, and advisor strategies stay composable.',
+  },
 ];
 ---
 
 <section class="story" id="story" aria-labelledby="story-h">
   <div class="container">
     <span class="eyebrow" data-reveal>The story</span>
-    <h2 id="story-h" data-reveal>Three architecture iterations in one day.</h2>
+    <h2 id="story-h" data-reveal>From three architecture iterations to a session companion.</h2>
     <p class="story-lead" data-reveal>
-      Real users hit slowness on a v0.1.0 prompt the same evening of release. Each iteration was a response to a specific complaint, with the receipt in the commit log. Honest changelogs, no marketing spin.
+      v0.1.x was three architecture iterations in a day, each a response to a real user complaint. v0.2.0 layered features on top of the stable architecture, with a research-first phase that simplified scope by composing with built-ins instead of reinventing them. Honest changelogs, no marketing spin.
     </p>
 
     <ol class="timeline" data-reveal>
@@ -99,6 +105,14 @@ const milestones = [
     height: 32px;
     background: var(--paper);
     z-index: 1;
+  }
+
+  /* Tighten the timeline indent on narrow screens so milestone cards don't get squashed */
+  @media (max-width: 480px) {
+    .milestone { padding-left: 44px; padding-bottom: 2rem; }
+    .timeline::before { left: 11px; }
+    .milestone-mark { width: 24px; height: 24px; }
+    .milestone-mark svg { width: 24px; height: 24px; }
   }
 
   .milestone-content header {

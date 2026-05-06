@@ -16,6 +16,8 @@ const steps = [
       <code>/yukti:smart &lt;task&gt;</code> classifies your request and runs it through a pipeline of specialist subagents. Code changes go through five stages — each on the cheapest model that does the step well. Analysis questions are answered directly in your current session, no extra wait.
     </p>
 
+    <p class="diagram-hint" aria-hidden="true">← scroll to see the full pipeline →</p>
+
     <div class="diagram-wrap" data-reveal>
       <svg
         class="diagram"
@@ -86,12 +88,30 @@ const steps = [
     overflow-x: auto;
     margin: 1rem 0 2rem;
     -webkit-overflow-scrolling: touch;
+    /* Soft fade hint on the right edge to suggest horizontal scroll on mobile */
+    background:
+      linear-gradient(to right, var(--paper) 0%, transparent 8px) left,
+      linear-gradient(to left, var(--paper) 0%, transparent 16px) right;
+    background-size: 16px 100%, 24px 100%;
+    background-repeat: no-repeat;
+    background-attachment: local, local;
   }
   .diagram {
     width: 100%;
     min-width: 720px;
     height: auto;
     overflow: visible;
+  }
+  /* Mobile: explicit hint that the diagram scrolls horizontally */
+  .diagram-hint {
+    display: none;
+    color: var(--grey);
+    font-size: 0.82rem;
+    margin: -1rem 0 1.5rem;
+    font-style: italic;
+  }
+  @media (max-width: 720px) {
+    .diagram-hint { display: block; }
   }
 
   .pipe-label {

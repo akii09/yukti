@@ -43,6 +43,26 @@ But the site **describes** the plugin, so its content must stay in sync with the
 
 ---
 
+## Astro scoping gotcha (learned the hard way in v0.2.0)
+
+When writing scoped `<style>` rules with `:checked ~ ...` selectors (CSS-only tabs via radio inputs, accordion patterns, etc.), **do NOT comma-group multiple `:checked` selectors into one ruleset.** Astro's CSS scoper has a bug where the leading `#id:checked ~` prefix gets dropped from the FIRST selector in the comma group, leaving an unconditional rule like `.tab-labels label[for=foo] { ... }` that always matches.
+
+Wrong (Astro mangles the first selector — one tab always appears active):
+```css
+#tab-a:checked ~ .panels .panel-a,
+#tab-b:checked ~ .panels .panel-b { display: block; }
+```
+
+Right (split into separate rulesets, repeat the body — verbose but correct):
+```css
+#tab-a:checked ~ .panels .panel-a { display: block; }
+#tab-b:checked ~ .panels .panel-b { display: block; }
+```
+
+See `src/components/GetStarted.astro` for the canonical workaround in this codebase. If you ever add another set of CSS-only tabs / accordions / radio-driven UI, follow the split-rule pattern.
+
+Also: CSS-only tabs require the radio inputs to be **direct siblings** of the elements they control via `~`. Don't wrap radios in a `<fieldset>` or any container — the general-sibling combinator can't cross those boundaries. For accessibility, put `role="region"` + `aria-label` on the outer wrapper instead.
+
 ## Performance budget
 
 This is a one-page marketing site. The bar is **Lighthouse 100 across all four categories** on a clean Cloudflare Pages deploy.

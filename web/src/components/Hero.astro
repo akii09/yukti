@@ -24,13 +24,7 @@ import Logo from './Logo.astro';
     </h1>
 
     <p class="hero-sub" data-reveal>
-      A lightweight Claude Code plugin that splits your task across <strong>specialist subagents</strong>, each on the cheapest model that does the step well.
-    </p>
-
-    <p class="hero-claim" data-reveal>
-      <span class="claim-pill">~50–60% cost reduction</span>
-      <span class="claim-sep">·</span>
-      <span>quality on par for routine code work</span>
+      A Claude Code plugin that routes each pipeline stage to the cheapest model that does the step well — <strong>Haiku</strong> to explore, <strong>Sonnet</strong> to implement, <strong>Opus</strong> to plan and review.
     </p>
 
     <div class="hero-cta" data-reveal>
@@ -43,9 +37,7 @@ import Logo from './Logo.astro';
       </a>
     </div>
 
-    <p class="hero-foot" data-reveal>
-      <span>MIT licensed</span> · <a href="#story">3 architecture iterations in one day, all driven by real user testing</a>
-    </p>
+    <p class="hero-foot" data-reveal>MIT licensed · v0.2.0</p>
   </div>
 </section>
 
@@ -92,32 +84,12 @@ import Logo from './Logo.astro';
     padding: 0 0.15em;
   }
 
-  .hero-claim {
-    color: var(--grey);
-    font-size: 0.98rem;
-    margin: 0 0 2rem;
-    display: inline-flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-    align-items: center;
-  }
-  .claim-pill {
-    background: var(--paper-2);
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    padding: 0.2rem 0.85rem;
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .claim-sep { opacity: 0.4; }
-
   .hero-cta {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    margin: 1.75rem 0 1.5rem;
   }
 
   .install-cmd {
@@ -152,10 +124,11 @@ import Logo from './Logo.astro';
 
   .hero-foot {
     color: var(--grey);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     margin: 0;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
   }
-  .hero-foot a { color: var(--grey); text-decoration: underline wavy var(--accent-soft); text-underline-offset: 3px; }
 </style>
 
 <script>
