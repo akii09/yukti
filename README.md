@@ -139,7 +139,8 @@ Optional per-project config at `.claude/yukti-config.json`:
   "stopHookEnabled": true,
   "verifyCommand": null,
   "briefEnabled": true,
-  "telemetry": "off"
+  "telemetry": "off",
+  "routingHints": "off"
 }
 ```
 
@@ -150,8 +151,23 @@ Optional per-project config at `.claude/yukti-config.json`:
 | `verifyCommand` | `null` | Override the auto-detected verification command. Use for non-JS projects (e.g. `"go test ./..."`, `"cargo check"`). |
 | `briefEnabled` | `true` | Whether the SessionStart hook injects a project brief on session start. |
 | `telemetry` | `"off"` | Set to `"local"` to log per-task cost / savings to `~/.claude/yukti-telemetry.jsonl`. Local file only — never uploaded. See "Telemetry & privacy" below. |
+| `routingHints` | `"off"` | `"advisory"` shows a gentle hint to use `/yukti:smart` when your prompt looks like a code change. `"auto"` is best-effort stronger suggestion (see "Routing hints" below). Default off — no behavior change unless you opt in. |
 
 If the config file is absent, defaults apply.
+
+### Routing hints (opt-in, off by default)
+
+Don't want to remember to type `/yukti:smart` every time? Set `"routingHints": "advisory"` and Yukti's `UserPromptSubmit` hook will gently suggest it when your prompt looks like a code-change task ("Add", "Fix", "Refactor", etc.). The original prompt still goes through normally — the hint is *additional context*, not a hijack.
+
+| Mode | What happens |
+|---|---|
+| `"off"` (default) | No advisory ever. v0.1.x behavior. |
+| `"advisory"` | When your prompt starts with a code-change verb, Yukti appends a one-line hint to the conversation: "this looks like a code-change task; consider `/yukti:smart` to save ~50% cost." You're free to ignore it. |
+| `"auto"` | Best-effort stronger suggestion that asks the main agent to invoke the orchestrator. **Caveat**: Claude Code hooks cannot directly invoke an agent — this depends on the main agent following the instruction, and is not a hard auto-route. Treat this as experimental. |
+
+Privacy: the hook reads your prompt to classify it, but writes nothing about it anywhere. No logs, no scratch files. The only effect of the hook is the hint emitted that turn.
+
+The classifier is intentionally conservative — questions ending in `?`, very short prompts, and prompts that already start with `/yukti:` or `/smart` are skipped. False negatives (a code-change task that doesn't get a hint) are fine; false positives (a hint on a non-code prompt) cost trust.
 
 ### Telemetry & privacy
 

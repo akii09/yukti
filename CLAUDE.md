@@ -207,7 +207,7 @@ The plugin writes these at runtime in the user's project — they are NOT source
 
 | File | Written by | Read by | Purpose |
 |---|---|---|---|
-| `.claude/yukti-config.json` | user / `install.sh` (defaults) | hooks, scripts, agents | per-project config (capReadLines, briefEnabled, verifyCommand, telemetry, …) |
+| `.claude/yukti-config.json` | user / `install.sh` (defaults) | hooks, scripts, agents | per-project config (capReadLines, briefEnabled, verifyCommand, telemetry, routingHints, …) |
 | `.claude/.yukti-state.json` | `smart-orchestrator` between pipeline steps | `bin/session-brief.sh`, `skills/status/SKILL.md` | in-flight task state (lastTask, currentPhase, lastUpdated) |
 | `.claude/.yukti-telemetry-scratch.jsonl` | `smart-orchestrator` (one line per pipeline stage) | `bin/yukti-telemetry-record.sh` (consumes + deletes at end of pipeline) | per-task scratch — only `{stage, model, size_bucket}`, no source content |
 | `~/.claude/yukti-telemetry.jsonl` | `bin/yukti-telemetry-record.sh` (when telemetry: local) | `bin/yukti-savings-summary.sh`, `/yukti:status` | local-only opt-in usage log; per-task cost + baseline + savings |
@@ -222,6 +222,16 @@ When changing anything in the telemetry path (`bin/yukti-telemetry-record.sh`, `
 4. **Telemetry default is `"off"`** — opt-in only.
 5. **Logs are local-only** — `~/.claude/yukti-telemetry.jsonl` is never uploaded by Yukti. (If a future feature wants to *opt-in* share, it must be a separate `share` mode behind explicit user action.)
 6. **Disable is one config-flag flip away** — `"telemetry": "off"` immediately stops new writes; deleting the log file is one `rm` away.
+
+### Privacy invariants for routing hints (must hold across every change)
+
+When changing `bin/yukti-route-hint.sh` or its config field:
+
+1. **The hook reads the prompt but writes nothing about it anywhere.** No logs, no scratch files. The only effect is the `additionalContext` emitted that turn — which goes back to the main agent, not to disk.
+2. **Default mode is `"off"`** — no advisory ever, no behavior change.
+3. **Classifier is conservative**: imperative verbs at the start, length filter, question-mark filter, skip if user already invoked `/yukti:*` or `/smart`. False negatives are fine; false positives cost trust.
+4. **`"auto"` mode is honestly labeled as best-effort.** Claude Code hooks cannot directly invoke an agent. The hint is a strong suggestion to the main agent — never a guaranteed route. Documentation must say so.
+5. **Coexists with other plugins' UserPromptSubmit hooks** without ordering dependency (per Claude Code docs: "all matching hooks run in parallel").
 
 When changing the schema or output format of any of these, update both writers AND readers in the same logical change.
 
