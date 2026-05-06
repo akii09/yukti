@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs / temp
+*.log
+*.tmp
+tmp/
+.cache/
+
+# Project-specific
+.claude/yukti-config.json     # per-user config; should never be committed
+yukti-verify.*                 # mktemp output from stop-verify.sh
+
+
+/docs
