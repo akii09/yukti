@@ -36,27 +36,51 @@ This plugin is the codification of practices that Claude itself recommended for 
 
 ## Install
 
-### Via plugin marketplace (recommended)
+### Plugin marketplace — recommended for almost everyone
 
-```bash
+Run inside any Claude Code session:
+
+```
 /plugin marketplace add akii09/yukti
 /plugin install yukti@akii09-yukti
 ```
 
-### Local / development
+Yukti is installed once at the user level and available across **every** project you open with Claude Code. Skills are namespaced (`/yukti:smart`, `/yukti:plan`, `/yukti:explore`, `/yukti:implement`, `/yukti:review`) so they never collide with other plugins or future built-in commands.
+
+To upgrade later:
+```
+/plugin upgrade yukti
+```
+
+### When to choose another path
+
+| Your situation | Use this |
+|---|---|
+| Normal user, want savings on every project | **Marketplace install above** ✅ |
+| Locked-down env (corporate proxy, no marketplace, CI runner) | Fallback installer (below) |
+| You want to enforce Yukti for *every contributor* of one specific repo | Fallback installer, commit `.claude/` to that repo |
+| Plugin development / quick eval against a fork | `claude --plugin-dir ./yukti` (below) |
+
+### Fallback — per-project install (no marketplace required)
+
+Drops the agents, skills, hooks, and bin scripts into the current project's `.claude/` directory. Skills are **not namespaced** in this mode — they're invoked as `/smart`, `/plan`, `/explore`, `/implement`, `/review`. That means autocomplete won't surface them under `/yukti`, and they may collide with anything else in your project that defines those names.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash
+```
+
+If `jq` is available it's used for clean JSON merging; otherwise the script falls back to `sed`.
+
+### Plugin development
+
+Clone and load the plugin directly without a marketplace:
 
 ```bash
 git clone https://github.com/akii09/yukti.git
 claude --plugin-dir ./yukti
 ```
 
-### Fallback (copy files into your project's .claude/)
-
-```bash
-curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash
-```
-
-This drops the agents, skills, and hooks into the current project's `.claude/` directory. Less clean than the plugin install but works without a marketplace.
+Skills appear as `/yukti:smart` etc. Useful for evaluating a fork or developing changes.
 
 ## Use it
 
