@@ -110,19 +110,19 @@ If you want to run individual stages (e.g. just plan, or just review):
 
 ## How `/yukti:smart` handles different requests
 
-`/yukti:smart` is a single entry point for everything. A fast Sonnet **front-door** classifies what you typed and routes it to the right place — you don't need to memorize which sub-skill to call.
+`/yukti:smart` is a single entry point for everything — no routing decisions on your part:
 
-| What you ask | What happens | Cost / time |
-|---|---|---|
-| "Add X", "Fix Y", "Refactor Z" (any concrete code change) | Routes to the full pipeline: explore → plan → **you confirm** → implement → review | Mostly Sonnet/Haiku with Opus for plan + review. Same as before. |
-| "Produce a plan to do X" (no implementation expected yet) | Routes to the planner only — returns a phased plan you can review | Opus (planner only) |
-| "Review what I just changed" | Routes to the reviewer on the current diff | Opus (reviewer only) |
-| "Where is X defined?" / "Which files use Y?" | Routes to the explorer | Haiku (cheap & fast) |
-| "Compare these two plans, which is current?" / "What's pending in this doc?" / "Explain how X works" | Front-door reads the relevant files and answers directly | Sonnet (fast, ~as good as plain chat for routine analysis) |
+| What you ask | What happens |
+|---|---|
+| "Add X" / "Fix Y" / "Refactor Z" (concrete code change) | Routes to the full pipeline: explore → plan → **you confirm** → implement → review. Token-saving lives here. |
+| "Produce a plan to do X" (no implementation yet) | Routes to the planner only |
+| "Review what I just changed" | Routes to the reviewer on the current diff |
+| "Where is X defined?" | Routes to the explorer (Haiku) |
+| Anything else (analysis, comparison, explanation, status questions) | Answered directly in the same session — no extra wait, same speed as plain chat |
 
-**You don't need to phrase things in any particular way.** The front-door figures it out. If it picks wrong, the planner has a defense-in-depth check that catches misclassifications, and the front-door re-routes to a direct answer.
+**You don't need to phrase things in any particular way.** The skill classifies and acts. If it picks wrong, the planner has a defense-in-depth check that catches misclassifications. **It will never refuse you.**
 
-If you specifically *want* to bypass auto-routing, the individual skills (`/yukti:explore`, `/yukti:plan`, `/yukti:implement`, `/yukti:review`) are still there as explicit overrides.
+If you want to bypass auto-routing and call a stage directly, the individual skills (`/yukti:explore`, `/yukti:plan`, `/yukti:implement`, `/yukti:review`) are explicit overrides.
 
 ## Configuration
 
