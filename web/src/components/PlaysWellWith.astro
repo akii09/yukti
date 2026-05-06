@@ -1,0 +1,128 @@
+---
+const partners = [
+  {
+    name: 'claude-mem',
+    by: 'thedotmack',
+    url: 'https://github.com/thedotmack/claude-mem',
+    role: 'Cross-session memory',
+    blurb: 'Preserves context across coding sessions — semantic summaries, smart search, citations. Yukti reads from it when present so the planner has yesterday\'s decisions in scope.',
+  },
+  {
+    name: 'code-review-graph',
+    by: 'tirth8205',
+    url: 'https://github.com/tirth8205/code-review-graph',
+    role: 'Structural review',
+    blurb: 'Tree-sitter AST graph + blast-radius analysis. ~8× token reduction on reviews by reading only the files actually affected. Future Yukti versions can use it for explorer-stage queries.',
+  },
+];
+---
+
+<section class="composes" id="composes" aria-labelledby="composes-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>Plays well with</span>
+    <h2 id="composes-h" data-reveal>Yukti is the routing layer. We don't reinvent the rest.</h2>
+
+    <p class="composes-lead" data-reveal>
+      Memory and structural code analysis are real, hard problems. Other plugins solve them well. Yukti recommends installing them alongside instead of building inferior copies inside.
+    </p>
+
+    <div class="composes-grid">
+      {partners.map((p) => (
+        <a class="partner" href={p.url} target="_blank" rel="noopener" data-reveal>
+          <div class="partner-head">
+            <span class="partner-role">{p.role}</span>
+            <span class="partner-arrow" aria-hidden="true">→</span>
+          </div>
+          <h3>
+            <span class="partner-name">{p.name}</span>
+            <span class="partner-by">by {p.by}</span>
+          </h3>
+          <p>{p.blurb}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .composes { background: var(--paper); }
+
+  .composes-lead {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    margin: 1.25rem 0 2.5rem;
+  }
+
+  .composes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .partner {
+    display: block;
+    background: var(--paper-2);
+    border: 1.5px solid var(--grey-line);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.4rem;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .partner:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--ink);
+    border-color: var(--ink);
+    text-decoration: none;
+  }
+
+  .partner-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.65rem;
+  }
+  .partner-role {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--accent-ink);
+    line-height: 1;
+  }
+  .partner-arrow {
+    color: var(--grey);
+    font-size: 1rem;
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+  .partner:hover .partner-arrow {
+    transform: translateX(4px);
+    color: var(--ink);
+  }
+
+  .partner h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 0 0 0.55rem;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .partner-name {
+    font-family: var(--font-mono);
+    font-size: 0.96rem;
+  }
+  .partner-by {
+    color: var(--grey);
+    font-weight: 400;
+    font-size: 0.84rem;
+  }
+
+  .partner p {
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+</style>
