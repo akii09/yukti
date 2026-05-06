@@ -29,6 +29,43 @@ When the pipeline finishes (after Step 7), update with `phase: "complete"` so th
 
 If `jq` isn't available, skip the state write rather than failing — it's advisory, not blocking.
 
+# Telemetry capture (per-stage scratch + final record)
+
+Every subagent ends its output with an HTML comment carrying its self-reported metrics:
+
+```
+<!-- yukti:metrics {"model":"<haiku|sonnet|opus>","stage":"<explore|plan|implement|review>","size_bucket":"<small|medium|large|xlarge>"} -->
+```
+
+After receiving each subagent's response, **extract that metrics object** and append it as one line to the per-task scratch file at `${CLAUDE_PROJECT_DIR}/.claude/.yukti-telemetry-scratch.jsonl`:
+
+```bash
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+mkdir -p "$PROJECT_DIR/.claude"
+echo '{"stage":"<stage>","model":"<model>","size_bucket":"<bucket>"}' \
+  >> "$PROJECT_DIR/.claude/.yukti-telemetry-scratch.jsonl"
+```
+
+(Substitute the literal values from the metrics block you read. Nothing else is logged — no source content, no file lists, no diffs.)
+
+After Step 7 (final report to user), call the telemetry recorder ONCE with the task description and accumulated scratch:
+
+```bash
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+SCRATCH="$PROJECT_DIR/.claude/.yukti-telemetry-scratch.jsonl"
+# Try plugin path first (marketplace install), fall back to project .claude/bin (fallback install)
+RECORDER="${CLAUDE_PLUGIN_ROOT:-$PROJECT_DIR/.claude}/bin/yukti-telemetry-record.sh"
+[ -x "$RECORDER" ] || RECORDER="$PROJECT_DIR/.claude/bin/yukti-telemetry-record.sh"
+if [ -x "$RECORDER" ]; then
+  "$RECORDER" \
+    --task "<short task description ≤80 chars>" \
+    --task-class "code-change" \
+    --scratch "$SCRATCH"
+fi
+```
+
+The recorder honors the user's `telemetry` config setting (off by default). If telemetry is `local`, it appends a JSONL entry to `~/.claude/yukti-telemetry.jsonl` and clears the scratch. If telemetry is `off`, it just clears the scratch and exits silently. Either way, the orchestrator does not need to know.
+
 # The pipeline
 
 You are invoked when a request has been classified as a **code change** (either by the `/yukti:smart` skill's main-agent classifier, or by direct user invocation). You can trust the classification — your job is to run the implementation pipeline cleanly.
@@ -41,6 +78,8 @@ Execute the following steps **in order**, without skipping any:
 
 Invoke the `explorer` subagent via the Agent tool. Pass the user's task verbatim. You will receive a file list with confidence rating.
 
+**After receiving**: read the explorer's `<!-- yukti:metrics ... -->` line and append to the telemetry scratch file (see "Telemetry capture" above).
+
 If `Confidence: low`, surface the explorer's Notes to the user and ask: "The explorer wasn't sure which files to target. Can you clarify, or should I proceed with the candidates anyway?" Wait for response.
 
 ## Step 2 — Plan
@@ -52,6 +91,8 @@ Invoke the `planner` subagent via the Agent tool. Pass:
 - The explorer's file list (verbatim)
 
 You will receive **either** a phased plan **or** a `## Not applicable for /yukti:smart` block.
+
+**After receiving** (either case): read the planner's `<!-- yukti:metrics ... -->` line and append to the telemetry scratch file.
 
 If the planner returns a `Not applicable` block: surface it verbatim to your caller (the `/yukti:smart` skill or the user directly) and **stop the pipeline**. Do not proceed to Step 3. This is the planner's defense-in-depth — it saw the actual files and concluded no code change is required, even though classification picked code-change. The caller can re-handle the request as analysis.
 
@@ -82,7 +123,7 @@ For each phase in the approved plan, in order:
    - The phase description (verbatim from the plan)
    - The verification command for that phase
    - The "Notes for implementer" section from the plan
-2. Read the implementer's report.
+2. Read the implementer's report. **Extract its `<!-- yukti:metrics ... -->` line and append to the telemetry scratch file** (one entry per implementer call, even within Step 4's loop).
 3. If the implementer reports `Result: FAIL` on verification: **stop the pipeline**. Surface the failure to the user with this message: "Phase N failed verification. The implementer reported: <error>. Should I (a) re-invoke the planner to revise the plan, (b) ask you to investigate manually, or (c) skip this phase?"  Wait for response.
 4. If `Result: PASS`, proceed to the next phase.
 
@@ -108,9 +149,13 @@ Invoke the `reviewer` subagent via the Agent tool. Pass:
 
 You will receive a P0/P1/P2/P3 issue list and a verdict.
 
+**After receiving**: read the reviewer's `<!-- yukti:metrics ... -->` line and append to the telemetry scratch file.
+
 ## Step 7 — Final report to user
 
-**Before composing the report**: write state with `phase: "complete"` so the next session's brief doesn't surface this finished task as in-flight.
+**Before composing the report**:
+1. Write state with `phase: "complete"` so the next session's brief doesn't surface this finished task as in-flight.
+2. Run the telemetry recorder once with the accumulated scratch (see "Telemetry capture" above). The recorder honors the user's `telemetry` config — off by default, no-op when off.
 
 Compose a single concise report:
 

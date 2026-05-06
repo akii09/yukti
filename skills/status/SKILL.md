@@ -84,6 +84,21 @@ if [ -n "$NOTES" ]; then
   echo ""
   echo "**Memory**: $NOTES"
 fi
+
+# Telemetry savings (only printed if telemetry log exists)
+SAVINGS_SCRIPT=""
+for path in \
+    "${CLAUDE_PLUGIN_ROOT:-}/bin/yukti-savings-summary.sh" \
+    "$PROJECT_DIR/.claude/bin/yukti-savings-summary.sh"; do
+  if [ -n "$path" ] && [ -x "$path" ]; then
+    SAVINGS_SCRIPT="$path"
+    break
+  fi
+done
+if [ -n "$SAVINGS_SCRIPT" ] && [ -f "$HOME/.claude/yukti-telemetry.jsonl" ]; then
+  echo ""
+  "$SAVINGS_SCRIPT" --days 30
+fi
 '`
 ```
 

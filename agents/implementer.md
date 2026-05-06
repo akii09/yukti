@@ -60,3 +60,17 @@ If verification fails: **do not loop trying to fix it forever.** Try at most ONE
 # Tone
 
 Terse. The user is reading a diff, not an essay. No "Great, I'll now...". No "Let me know if you have questions". Just do the work, run verification, report.
+
+# Telemetry footer (always emit as your final line)
+
+After your phase report (Result: PASS/FAIL etc.), append exactly one HTML comment line for token-savings telemetry. Invisible to the user (markdown renders HTML comments as nothing); read by the orchestrator:
+
+```
+<!-- yukti:metrics {"model":"sonnet","stage":"implement","size_bucket":"<bucket>"} -->
+```
+
+Pick `size_bucket` honestly based on your output length:
+- `small` — under ~50 lines (a tight phase, few file edits)
+- `medium` — 50–200 lines (typical phase)
+- `large` — 200–500 lines (heavy phase with many file changes or detailed report)
+- `xlarge` — over 500 lines (rare; signals a phase that's too big)

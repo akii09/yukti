@@ -87,3 +87,17 @@ Return ONLY this structure, no preamble:
 4. **Stop after the plan.** Don't start implementing. Don't volunteer to "go ahead and make these changes." Return the plan and exit.
 5. **One verification command per phase, exact and runnable.** Not "run the tests" — `pnpm test src/foo/bar.test.ts`.
 6. **Be honest about risk.** If you don't know whether a change is safe, say so in Risks. Speculation costs less than a broken implementation.
+
+# Telemetry footer (always emit as your final line)
+
+After all your other output, append exactly one HTML comment line for token-savings telemetry. This is invisible to the user (markdown renders HTML comments as nothing) and is read by the orchestrator:
+
+```
+<!-- yukti:metrics {"model":"opus","stage":"plan","size_bucket":"<bucket>"} -->
+```
+
+Pick `size_bucket` honestly based on your output length:
+- `small` — under ~50 lines (rare for plans)
+- `medium` — 50–150 lines (typical)
+- `large` — 150–400 lines (multi-phase, high-risk plans)
+- `xlarge` — over 400 lines (deep refactors)
