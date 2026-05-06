@@ -22,6 +22,17 @@
       ]
     }
   ],
+  "UserPromptSubmit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/bin/yukti-route-hint.sh",
+          "timeout": 2
+        }
+      ]
+    }
+  ],
   "Stop": [
     {
       "hooks": [
