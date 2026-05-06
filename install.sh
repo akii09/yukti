@@ -96,7 +96,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
 {
   "capReadLines": 500,
   "stopHookEnabled": true,
-  "verifyCommand": null
+  "verifyCommand": null,
+  "briefEnabled": true
 }
 JSON
   echo "==> Created default config at $CONFIG_FILE"
@@ -108,21 +109,25 @@ cat <<EOF
 
 Files placed:
   $TARGET/agents/         (5 specialist subagents)
-  $TARGET/skills/         (5 skills: smart, explore, plan, implement, review)
-  $TARGET/hooks/          (cap-read, stop-verify hook scripts)
-  $TARGET/bin/            (executable hook scripts)
+  $TARGET/skills/         (6 skills: smart, explore, plan, implement, review, status)
+  $TARGET/hooks/          (PreToolUse, SessionStart, Stop hook configs)
+  $TARGET/bin/            (cap-read, session-brief, stop-verify scripts)
   $TARGET/yukti-config.json  (per-project config — edit as needed)
 
 Skills are namespaced. Note: in the fallback (non-plugin) install, skills are
 project-local and invoked WITHOUT the plugin namespace prefix:
-  /smart <task>      (full pipeline)
-  /explore <task>    (find files only — Haiku)
-  /plan <task>       (produce plan — Opus)
-  /implement <phase> (apply one phase — Sonnet)
-  /review            (review diff — Opus)
+  /smart <task>           (full pipeline)
+  /explore <task>         (find files only — Haiku)
+  /plan <task>            (produce plan — Opus)
+  /implement <phase>      (apply one phase — Sonnet)
+  /review                 (review diff — Opus)
+  /status [reset]         (project state brief; 'reset' clears in-flight task)
 
 If you used the marketplace install instead, prefix skills with the plugin
 namespace, e.g. /yukti:smart.
+
+A session brief auto-injects on Claude Code start (branch, git status,
+in-flight task). Disable via "briefEnabled": false in $TARGET/yukti-config.json.
 
 To remove: delete $TARGET/agents, $TARGET/skills, $TARGET/hooks, $TARGET/bin,
 and remove the hook entries from $SETTINGS_FILE.

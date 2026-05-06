@@ -1,5 +1,6 @@
 {
   "capReadLines": 500,
   "stopHookEnabled": true,
-  "verifyCommand": null
+  "verifyCommand": null,
+  "briefEnabled": true
 }
