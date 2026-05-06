@@ -10,7 +10,7 @@ A lightweight Claude Code plugin that splits a coding task across specialist sub
 
 - **Repo**: https://github.com/akii09/yukti
 - **License**: MIT
-- **Owner**: Akash Ree (`akii09` on GitHub)
+- **Owner**: [`akii09`](https://github.com/akii09) on GitHub
 - **Status**: pre-v0.1.0; see [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) (local-only, gitignored) for current phase.
 
 ---
