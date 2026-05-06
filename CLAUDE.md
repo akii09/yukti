@@ -110,6 +110,97 @@ For any non-trivial change, the workflow is:
 
 ---
 
+## Cross-cutting alignment — keeping plugin and web in sync
+
+The repo has multiple surfaces that describe Yukti's behavior, install path, models, and brand. They must stay aligned. The plugin source files in `agents/`, `skills/`, `hooks/`, and `bin/` are the **source of truth**; everything else trails them.
+
+| Surface | What lives there | Role |
+|---|---|---|
+| `agents/*.md` | Subagent definitions — model, tools, prompts | ✅ source of truth |
+| `skills/*/SKILL.md` | Skill frontmatter, fork target, allowed-tools | ✅ source of truth |
+| `hooks/hooks.json` + `bin/*.sh` | Hook behavior, config keys | ✅ source of truth |
+| `.claude-plugin/plugin.json` + `marketplace.json` | Marketplace metadata | trails source |
+| `install.sh` | Fallback installer, config file paths | trails source |
+| `README.md` | User-facing docs — install, use, benchmarks, behavior | trails source |
+| `CLAUDE.md` (this file) | AI working rules + project conventions | trails source |
+| `CONTRIBUTING.md` | Contributor expectations | trails source |
+| `web/` | Landing page — install commands, pipeline diagram, story timeline, benchmarks, contribution copy | trails source |
+
+### When a behavior-affecting change lands, run the alignment audit
+
+After modifying any of these (or before suggesting a commit that touches them):
+- A subagent's `model` or `tools` in `agents/<name>.md`
+- A skill's frontmatter (especially `agent:`, `context:`, `allowed-tools:`)
+- A hook's behavior in `bin/*.sh`
+- A config key in `yukti-config.example.json`
+- A version release / new architecture iteration
+- The README's install commands or skill-name table
+- The contribution accept/reject lists
+
+…run this audit and **flag anything that drifted to the user**. Do NOT silently update — surface drift with file paths and the specific lines that need attention. Let the user decide what to align.
+
+```bash
+# Yukti alignment audit — run from repo root
+echo "=== 1. Subagent models (agents/) ==="
+grep -E "^model:" agents/*.md
+
+echo ""
+echo "=== 2. Models referenced in web/ pipeline diagram (must match above) ==="
+grep -nE "model: '(Haiku|Sonnet|Opus|human)'" web/src/components/Pipeline.astro 2>/dev/null
+
+echo ""
+echo "=== 3. Skill names + fork targets (skills/) ==="
+for f in skills/*/SKILL.md; do
+  printf "  %-30s " "$f"
+  grep -hE "^(name|agent|context|allowed-tools):" "$f" | tr '\n' ' '
+  echo
+done
+
+echo ""
+echo "=== 4. Skill invocations in web/ usage examples (must reference real skills) ==="
+grep -hoE "/yukti:[a-z-]+|/(smart|explore|plan|implement|review)\b" web/src/components/*.astro 2>/dev/null | sort -u
+
+echo ""
+echo "=== 5. Install commands across README, install.sh, web/ (must match exactly) ==="
+echo "-- README.md:"
+grep -nE "marketplace add|@akii09-yukti|raw\.githubusercontent\.com.*install\.sh" README.md
+echo "-- install.sh REPO_GIT/REPO_RAW:"
+grep -nE "REPO_(GIT|RAW)=" install.sh
+echo "-- web/ install commands:"
+grep -nE "marketplace add|@akii09-yukti|raw\.githubusercontent\.com.*install\.sh" web/src/components/Hero.astro web/src/components/GetStarted.astro 2>/dev/null
+
+echo ""
+echo "=== 6. Benchmark numbers (web/ table must match README's) ==="
+grep -nE "[0-9]+%" README.md web/src/components/Benchmarks.astro 2>/dev/null | grep -E "cost|reduction|baseline|delta|−"
+
+echo ""
+echo "=== 7. Story timeline versions (web/) ==="
+grep -nE "v0\.[0-9]+\.[0-9]+" web/src/components/Story.astro 2>/dev/null
+
+echo ""
+echo "=== 8. Contribution copy alignment (CLAUDE.md, CONTRIBUTING.md, web/Contribute) ==="
+echo "-- CLAUDE.md 'We accept' items:"
+sed -n '/^We accept:/,/^We do not accept:/p' CLAUDE.md | grep -E "^- "
+echo "-- web/Contribute 'want' array:"
+grep -A 6 "^const want = " web/src/components/Contribute.astro 2>/dev/null | grep "  '"
+```
+
+**Drift you should catch most often:**
+
+| If you change… | Likely needs an update in |
+|---|---|
+| A subagent's `model` (`agents/*.md` frontmatter) | `web/src/components/Pipeline.astro` `steps` array |
+| A skill name or `agent:` target | `web/src/components/GetStarted.astro` examples; `Hero.astro` if it's `/yukti:smart`; `README.md` skill table |
+| Install commands (README) | `web/src/components/Hero.astro` install button; `web/src/components/GetStarted.astro` install cards; `install.sh` REPO_GIT URL |
+| Benchmark numbers in README | `web/src/components/Benchmarks.astro` rows + disclaimers |
+| New architecture iteration / new tagged release | `web/src/components/Story.astro` milestones array — **add a new entry, don't replace existing ones** |
+| Contribution rules in this CLAUDE.md or in CONTRIBUTING.md | `web/src/components/Contribute.astro` `want` / `dontWant` arrays |
+| Model labels (`Haiku`/`Sonnet`/`Opus`) | `web/src/components/Pipeline.astro`; pipeline ASCII art in `README.md`; agent description fields |
+
+For the web's own working rules (stack, what's locked, what's editable, performance budget, deploy), see [`web/CLAUDE.md`](web/CLAUDE.md).
+
+---
+
 ## Open-source contribution rules
 
 We accept:
