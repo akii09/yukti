@@ -207,9 +207,21 @@ The plugin writes these at runtime in the user's project — they are NOT source
 
 | File | Written by | Read by | Purpose |
 |---|---|---|---|
-| `.claude/yukti-config.json` | user / `install.sh` (defaults) | hooks, scripts, agents | per-project config (capReadLines, briefEnabled, verifyCommand, …) |
+| `.claude/yukti-config.json` | user / `install.sh` (defaults) | hooks, scripts, agents | per-project config (capReadLines, briefEnabled, verifyCommand, telemetry, …) |
 | `.claude/.yukti-state.json` | `smart-orchestrator` between pipeline steps | `bin/session-brief.sh`, `skills/status/SKILL.md` | in-flight task state (lastTask, currentPhase, lastUpdated) |
-| `~/.claude/yukti-telemetry.jsonl` (Phase 3 — not yet implemented) | telemetry hook (v0.2.0+) | `/yukti:status` savings read-out | local-only opt-in usage log |
+| `.claude/.yukti-telemetry-scratch.jsonl` | `smart-orchestrator` (one line per pipeline stage) | `bin/yukti-telemetry-record.sh` (consumes + deletes at end of pipeline) | per-task scratch — only `{stage, model, size_bucket}`, no source content |
+| `~/.claude/yukti-telemetry.jsonl` | `bin/yukti-telemetry-record.sh` (when telemetry: local) | `bin/yukti-savings-summary.sh`, `/yukti:status` | local-only opt-in usage log; per-task cost + baseline + savings |
+
+### Privacy invariants for telemetry (must hold across every change)
+
+When changing anything in the telemetry path (`bin/yukti-telemetry-record.sh`, `bin/yukti-savings-summary.sh`, the orchestrator's scratch-write instructions, or the subagent metrics directives), these must remain true:
+
+1. **The scratch file contains ONLY** `{stage, model, size_bucket}` — never source content, file lists, diffs, prompts, or responses.
+2. **Task descriptions are truncated to 80 chars** before they reach the log.
+3. **The recorder enforces a privacy gate** that refuses to write any line matching common source-code patterns (`function`, `class`, `import`, `const`, `let`, `var`, `def`).
+4. **Telemetry default is `"off"`** — opt-in only.
+5. **Logs are local-only** — `~/.claude/yukti-telemetry.jsonl` is never uploaded by Yukti. (If a future feature wants to *opt-in* share, it must be a separate `share` mode behind explicit user action.)
+6. **Disable is one config-flag flip away** — `"telemetry": "off"` immediately stops new writes; deleting the log file is one `rm` away.
 
 When changing the schema or output format of any of these, update both writers AND readers in the same logical change.
 

@@ -138,7 +138,8 @@ Optional per-project config at `.claude/yukti-config.json`:
   "capReadLines": 500,
   "stopHookEnabled": true,
   "verifyCommand": null,
-  "briefEnabled": true
+  "briefEnabled": true,
+  "telemetry": "off"
 }
 ```
 
@@ -148,8 +149,19 @@ Optional per-project config at `.claude/yukti-config.json`:
 | `stopHookEnabled` | `true` | Whether the Stop hook runs typecheck on agent stop. |
 | `verifyCommand` | `null` | Override the auto-detected verification command. Use for non-JS projects (e.g. `"go test ./..."`, `"cargo check"`). |
 | `briefEnabled` | `true` | Whether the SessionStart hook injects a project brief on session start. |
+| `telemetry` | `"off"` | Set to `"local"` to log per-task cost / savings to `~/.claude/yukti-telemetry.jsonl`. Local file only — never uploaded. See "Telemetry & privacy" below. |
 
 If the config file is absent, defaults apply.
+
+### Telemetry & privacy
+
+Telemetry is **opt-in**, **local-only**, and **never transmits anything**.
+
+- Toggle in `~/.claude/yukti-global-config.json` or the project's `.claude/yukti-config.json`: `"telemetry": "local"` to enable, `"off"` to disable. Default is off.
+- When enabled, after every `/yukti:smart` run, one JSONL record is appended to `~/.claude/yukti-telemetry.jsonl` containing per-stage model + size bucket + computed cost, the per-task total, and the always-Opus baseline cost.
+- **The log NEVER contains source code, file contents, diffs, prompts, or responses.** Only stage names, model names, size buckets (small/medium/large/xlarge), computed dollar amounts, and your task description truncated to 80 characters. The recorder script also enforces a privacy gate that refuses to write any line containing source-code patterns (`function`, `class`, `import`, etc.) as defense in depth.
+- Run `/yukti:status` to see your cumulative savings (last 30 days by default). The skill calls `bin/yukti-savings-summary.sh`, which reads the local log and prints a summary — no upload anywhere.
+- To delete: `rm ~/.claude/yukti-telemetry.jsonl`. To stop logging: set telemetry back to `"off"`.
 
 ## Benchmarks
 
