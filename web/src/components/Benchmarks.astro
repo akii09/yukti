@@ -1,0 +1,145 @@
+---
+const rows = [
+  { task: 'Add a typed UI feature (3 files)', baseline: '$0.80', yukti: '$0.31', delta: '−61%', good: true },
+  { task: 'Refactor a utility module (5 files)', baseline: '$1.20', yukti: '$0.52', delta: '−57%', good: true },
+  { task: 'Debug a flaky test', baseline: '$0.45', yukti: '$0.42', delta: '−7%', good: false },
+];
+---
+
+<section class="benchmarks" id="benchmarks" aria-labelledby="bench-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>Honest benchmarks</span>
+    <h2 id="bench-h" data-reveal>What we measured. What we didn't fudge.</h2>
+
+    <p class="bench-lead" data-reveal>
+      These are illustrative numbers from three task types Claude Code users hit every day. <strong>Your repo will vary.</strong> If your numbers contradict ours, we want to hear about it — file a <a href="https://github.com/akii09/yukti/issues/new?template=benchmark.md" target="_blank" rel="noopener">benchmark report</a> and we will not delete unflattering data.
+    </p>
+
+    <div class="bench-table-wrap" data-reveal>
+      <table class="bench-table">
+        <thead>
+          <tr>
+            <th scope="col">Task type</th>
+            <th scope="col">Always-Opus</th>
+            <th scope="col">Yukti <code>/smart</code></th>
+            <th scope="col">Cost reduction</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr>
+              <th scope="row">{r.task}</th>
+              <td>{r.baseline}</td>
+              <td>{r.yukti}</td>
+              <td>
+                <span class={`delta ${r.good ? 'delta--good' : 'delta--meh'}`}>
+                  {r.delta}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bench-disclaimers" data-reveal>
+      <div class="disc">
+        <h3>Where Yukti shines</h3>
+        <p>Routine code work — adding features, refactoring, fixing bugs in well-organized code. Quality is on par with always-Opus. Cost drops by half.</p>
+      </div>
+      <div class="disc">
+        <h3>Where it barely helps</h3>
+        <p>Deep debugging where most of the work is Opus reasoning anyway. Yukti won't slow you down, but the savings tail off — sometimes to single digits.</p>
+      </div>
+      <div class="disc">
+        <h3>Where it loses ~5%</h3>
+        <p>Hard, novel algorithms or gnarly multi-file refactors. Workaround: invoke <code>/yukti:plan</code> directly (Opus) and review the plan carefully before approving.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .benchmarks { background: var(--paper-2); border-top: 1px solid var(--grey-line); border-bottom: 1px solid var(--grey-line); }
+
+  .bench-lead {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    margin: 1.25rem 0 2rem;
+  }
+  .bench-lead strong { font-weight: 600; background: linear-gradient(transparent 60%, var(--accent-soft) 60%); padding: 0 0.15em; }
+
+  .bench-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 2.5rem;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--grey-soft);
+  }
+
+  .bench-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.96rem;
+  }
+  .bench-table thead {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .bench-table th, .bench-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--grey-line);
+  }
+  .bench-table thead th {
+    font-weight: 600;
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .bench-table thead th code {
+    background: rgba(255,255,255,0.12);
+    border: 0;
+    color: inherit;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .bench-table tbody tr:last-child th, .bench-table tbody tr:last-child td { border-bottom: 0; }
+  .bench-table th[scope="row"] { font-weight: 600; color: var(--ink); }
+  .bench-table td { color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.92rem; }
+
+  .delta {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+  }
+  .delta--good {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .delta--meh {
+    background: var(--grey-line);
+    color: var(--grey);
+  }
+
+  .bench-disclaimers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+  .disc h3 {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+    color: var(--ink);
+  }
+  .disc p {
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>

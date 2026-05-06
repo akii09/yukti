@@ -1,0 +1,114 @@
+---
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <Logo size={28} withWordmark={true} />
+      <p>Token-saving Claude Code plugin. Honest benchmarks. MIT licensed.</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer">
+      <div class="footer-col">
+        <h4>Project</h4>
+        <ul>
+          <li><a href="https://github.com/akii09/yukti" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/akii09/yukti/releases" target="_blank" rel="noopener">Releases</a></li>
+          <li><a href="https://github.com/akii09/yukti/issues" target="_blank" rel="noopener">Issues</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Docs</h4>
+        <ul>
+          <li><a href="https://github.com/akii09/yukti/blob/main/README.md" target="_blank" rel="noopener">README</a></li>
+          <li><a href="https://github.com/akii09/yukti/blob/main/CLAUDE.md" target="_blank" rel="noopener">CLAUDE.md</a></li>
+          <li><a href="https://github.com/akii09/yukti/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Built by</h4>
+        <ul>
+          <li><a href="https://github.com/akii09" target="_blank" rel="noopener">@akii09</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© {year} akii09 · MIT</span>
+    <span class="footer-credit">Made with care, not magic.</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 2.5rem) 2rem;
+  }
+
+  .footer-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 2fr;
+    gap: 3rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid #3a3a3a;
+  }
+
+  .footer-brand :global(.logo) { color: var(--paper); }
+  .footer-brand p {
+    color: #a1a1aa;
+    font-size: 0.9rem;
+    margin: 0.75rem 0 0;
+    max-width: 26ch;
+    line-height: 1.5;
+  }
+
+  .footer-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  .footer-col h4 {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #a1a1aa;
+    margin: 0 0 0.85rem;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+  .footer-col a { color: var(--paper); font-size: 0.92rem; }
+  .footer-col a:hover { color: var(--accent-soft); text-decoration: underline wavy var(--accent); }
+
+  .footer-bottom {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: #71717a;
+    font-size: 0.84rem;
+  }
+  .footer-credit {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--accent-soft);
+  }
+
+  @media (max-width: 720px) {
+    .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-nav { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .footer-nav { grid-template-columns: 1fr 1fr; }
+  }
+</style>

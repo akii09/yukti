@@ -1,0 +1,189 @@
+---
+const installs = [
+  {
+    label: 'Marketplace',
+    recommended: true,
+    cmds: [
+      '/plugin marketplace add akii09/yukti',
+      '/plugin install yukti@akii09-yukti',
+    ],
+    note: 'Run inside any Claude Code session. Installs once, available across every project. Skills are namespaced (/yukti:smart, /yukti:plan, …).',
+  },
+  {
+    label: 'Per-project (curl)',
+    cmds: ['curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash'],
+    note: 'For locked-down envs without marketplace access, or when you want Yukti pinned in one specific repo. Skills are NOT namespaced in this mode.',
+  },
+  {
+    label: 'Plugin development',
+    cmds: [
+      'git clone https://github.com/akii09/yukti.git',
+      'claude --plugin-dir ./yukti',
+    ],
+    note: 'For evaluating a fork or developing changes against your own clone.',
+  },
+];
+
+const examples = [
+  { input: '/yukti:smart Add a CSV export to the schedule page', kind: 'code change', goes: 'full pipeline (explore → plan → confirm → implement → review)' },
+  { input: '/yukti:smart Compare @plan-a.md and @plan-b.md, which is current?', kind: 'analysis', goes: 'answered directly in your current session' },
+  { input: '/yukti:smart Where is the auth middleware defined?', kind: 'file location', goes: 'forwarded to the explorer (Haiku, fast)' },
+  { input: '/yukti:smart Produce a plan to migrate moment → date-fns', kind: 'plan only', goes: 'forwarded to the planner (Opus)' },
+];
+---
+
+<section class="get-started" id="get-started" aria-labelledby="gs-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>Get started</span>
+    <h2 id="gs-h" data-reveal>Three ways to install. The first works for almost everyone.</h2>
+
+    <div class="install-grid" data-reveal>
+      {installs.map((opt) => (
+        <article class={`install-card ${opt.recommended ? 'install-card--rec' : ''}`}>
+          <header>
+            <h3>{opt.label}</h3>
+            {opt.recommended && <span class="rec-tag">recommended</span>}
+          </header>
+          <pre><code>{opt.cmds.join('\n')}</code></pre>
+          <p>{opt.note}</p>
+        </article>
+      ))}
+    </div>
+
+    <h3 class="usage-h" data-reveal>Then just type what you want.</h3>
+
+    <ul class="examples" data-reveal>
+      {examples.map((ex) => (
+        <li class="example">
+          <code class="example-input">{ex.input}</code>
+          <div class="example-arrow" aria-hidden="true">
+            <svg width="32" height="14" viewBox="0 0 32 14" fill="none">
+              <path d="M 2 7 Q 8 3, 16 7 T 28 7 M 22 3 L 28 7 L 22 11" stroke="var(--grey)" stroke-width="1.5" stroke-linecap="round" fill="none" />
+            </svg>
+          </div>
+          <div class="example-result">
+            <span class="example-kind">{ex.kind}</span>
+            <span class="example-goes">{ex.goes}</span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .get-started { background: var(--paper); }
+
+  .install-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0 3.5rem;
+  }
+
+  .install-card {
+    background: var(--paper-2);
+    border: 1.5px solid var(--grey-line);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .install-card--rec {
+    border-color: var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+  .install-card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .install-card h3 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink);
+  }
+  .rec-tag {
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+  }
+  .install-card pre {
+    margin: 0;
+    font-size: 0.84rem;
+    padding: 0.85rem 1rem;
+  }
+  .install-card p {
+    color: var(--grey);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .usage-h {
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.6rem, 3vw, 2rem);
+  }
+
+  .examples {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .example {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) auto minmax(0, 2fr);
+    gap: 0.85rem;
+    align-items: center;
+    background: var(--paper-2);
+    border: 1px solid var(--grey-line);
+    border-radius: var(--radius);
+    padding: 0.85rem 1rem;
+  }
+  .example-input {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--ink);
+    overflow-x: auto;
+    word-break: break-word;
+  }
+  .example-arrow svg { flex-shrink: 0; }
+  .example-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .example-kind {
+    font-family: var(--font-display);
+    color: var(--accent-ink);
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .example-goes {
+    color: var(--grey);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 640px) {
+    .example {
+      grid-template-columns: 1fr;
+      text-align: left;
+    }
+    .example-arrow { display: none; }
+  }
+</style>

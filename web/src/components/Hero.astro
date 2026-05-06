@@ -1,0 +1,184 @@
+---
+import Logo from './Logo.astro';
+---
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-mark" data-reveal>
+      <Logo size={88} ariaLabel="Yukti — token-saving Claude Code plugin" />
+    </div>
+
+    <h1 class="hero-title" data-reveal>
+      <span>Yukti</span>
+      <em class="hero-flourish" aria-hidden="true">
+        <svg width="180" height="22" viewBox="0 0 180 22" fill="none">
+          <path
+            d="M2 14 C 30 6, 60 18, 90 11 S 150 4, 178 13"
+            stroke="var(--accent)"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            fill="none"
+          />
+        </svg>
+      </em>
+    </h1>
+
+    <p class="hero-sub" data-reveal>
+      A lightweight Claude Code plugin that splits your task across <strong>specialist subagents</strong>, each on the cheapest model that does the step well.
+    </p>
+
+    <p class="hero-claim" data-reveal>
+      <span class="claim-pill">~50–60% cost reduction</span>
+      <span class="claim-sep">·</span>
+      <span>quality on par for routine code work</span>
+    </p>
+
+    <div class="hero-cta" data-reveal>
+      <button class="install-cmd" type="button" aria-label="Copy install command">
+        <code>/plugin marketplace add akii09/yukti</code>
+        <span class="copy-hint" aria-hidden="true">click to copy</span>
+      </button>
+      <a href="https://github.com/akii09/yukti" class="btn btn--ghost" target="_blank" rel="noopener">
+        View on GitHub →
+      </a>
+    </div>
+
+    <p class="hero-foot" data-reveal>
+      <span>MIT licensed</span> · <a href="#story">3 architecture iterations in one day, all driven by real user testing</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 5vw, 2rem) clamp(3rem, 6vw, 5rem);
+  }
+  .hero-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero-mark { margin-bottom: 1.25rem; display: inline-block; }
+
+  .hero-title {
+    font-size: clamp(4.5rem, 11vw, 8rem);
+    margin: 0 0 0.5rem;
+    line-height: 0.95;
+    position: relative;
+    display: inline-block;
+  }
+  .hero-flourish {
+    display: block;
+    margin: -0.4rem auto 0;
+    width: clamp(140px, 30vw, 200px);
+  }
+  .hero-flourish svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .hero-sub {
+    font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+    color: var(--ink-soft);
+    max-width: 580px;
+    margin: 1.25rem auto 1.5rem;
+    line-height: 1.55;
+  }
+  .hero-sub strong {
+    font-weight: 600;
+    background: linear-gradient(transparent 60%, var(--accent-soft) 60%);
+    padding: 0 0.15em;
+  }
+
+  .hero-claim {
+    color: var(--grey);
+    font-size: 0.98rem;
+    margin: 0 0 2rem;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+  .claim-pill {
+    background: var(--paper-2);
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.2rem 0.85rem;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .claim-sep { opacity: 0.4; }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .install-cmd {
+    border: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    padding: 0.7rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    position: relative;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .install-cmd:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--accent);
+  }
+  .install-cmd code { background: transparent; border: 0; padding: 0; color: inherit; font-size: inherit; }
+  .copy-hint {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    opacity: 0.55;
+    border-left: 1px solid var(--grey);
+    padding-left: 0.65rem;
+  }
+  .install-cmd.is-copied .copy-hint { color: var(--accent-soft); opacity: 1; }
+  .install-cmd.is-copied .copy-hint::after { content: ' ✓'; }
+
+  .hero-foot {
+    color: var(--grey);
+    font-size: 0.88rem;
+    margin: 0;
+  }
+  .hero-foot a { color: var(--grey); text-decoration: underline wavy var(--accent-soft); text-underline-offset: 3px; }
+</style>
+
+<script>
+  // Click-to-copy on the hero install command
+  const btn = document.querySelector<HTMLButtonElement>('.install-cmd');
+  const code = btn?.querySelector('code');
+  if (btn && code) {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? '');
+        btn.classList.add('is-copied');
+        const hint = btn.querySelector('.copy-hint');
+        if (hint) {
+          const original = hint.textContent;
+          hint.textContent = 'copied';
+          setTimeout(() => {
+            btn.classList.remove('is-copied');
+            hint.textContent = original;
+          }, 1600);
+        }
+      } catch (err) {
+        // Clipboard API may be unavailable on insecure origins; ignore quietly.
+      }
+    });
+  }
+</script>

@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Pipeline from '../components/Pipeline.astro';
+import WhyUse from '../components/WhyUse.astro';
+import GetStarted from '../components/GetStarted.astro';
+import Benchmarks from '../components/Benchmarks.astro';
+import Story from '../components/Story.astro';
+import Contribute from '../components/Contribute.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout
+  title="Yukti — token-saving Claude Code plugin (~50–60% cost reduction)"
+  description="Yukti routes your Claude Code work to the right model per stage (Haiku/Sonnet/Opus). Honest savings, real benchmarks, no rules to memorize. Just type /yukti:smart."
+>
+  <Nav />
+  <main id="main">
+    <Hero />
+    <hr class="section-divider" aria-hidden="true" />
+    <Pipeline />
+    <WhyUse />
+    <hr class="section-divider" aria-hidden="true" />
+    <GetStarted />
+    <Benchmarks />
+    <Story />
+    <hr class="section-divider" aria-hidden="true" />
+    <Contribute />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  // Scroll-triggered reveal — uses IntersectionObserver (zero deps, ~1KB).
+  // Motion One isn't required for this simple use case, but we ship it for any
+  // future custom animations and keep this implementation tiny.
+
+  const supportsIO = 'IntersectionObserver' in window;
+
+  if (supportsIO) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    document.querySelectorAll('[data-reveal], .diagram-wrap').forEach((el) => io.observe(el));
+  } else {
+    // No IO → just show everything.
+    document.querySelectorAll('[data-reveal], .diagram-wrap').forEach((el) =>
+      el.classList.add('is-visible')
+    );
+  }
+
+  // Smooth scroll for anchor links (with header offset)
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        const headerOffset = 70;
+        const top = (target as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top, behavior: 'smooth' });
+        history.pushState(null, '', href);
+      }
+    });
+  });
+</script>

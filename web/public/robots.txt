@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://akii09.github.io/yukti/sitemap-index.xml

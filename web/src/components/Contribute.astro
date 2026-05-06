@@ -1,0 +1,95 @@
+---
+const want = [
+  'Real benchmark data — including unflattering numbers',
+  'Bug reports with a reproducer and a verification step',
+  'Verification-command presets for non-JS projects (Elixir, Java, Ruby, …)',
+  'Documentation fixes — typos, broken links, install steps',
+];
+const dontWant = [
+  'Features whose behavior depends on undocumented Claude Code internals',
+  '"More aggressive" auto-routing that compromises quality',
+  'Marketing claims about cost or token savings beyond what we can demonstrate',
+  'Major scope expansions without prior discussion in an issue',
+];
+---
+
+<section class="contrib" id="contribute" aria-labelledby="contrib-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>Contribute</span>
+    <h2 id="contrib-h" data-reveal>What we want. What we don't.</h2>
+
+    <div class="contrib-grid">
+      <div class="contrib-col contrib-col--want" data-reveal>
+        <h3>We want most</h3>
+        <ul>
+          {want.map((item) => (
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 13 L 10 18 L 20 6" stroke="var(--accent-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="contrib-col contrib-col--dont" data-reveal>
+        <h3>We won't accept</h3>
+        <ul>
+          {dontWant.map((item) => (
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6 L 18 18 M 18 6 L 6 18" stroke="var(--grey)" stroke-width="2.4" stroke-linecap="round" />
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="contrib-cta" data-reveal>
+      <a class="btn" href="https://github.com/akii09/yukti/issues/new?template=benchmark.md" target="_blank" rel="noopener">
+        Submit a benchmark
+      </a>
+      <a class="btn btn--ghost" href="https://github.com/akii09/yukti/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">
+        Contribution guide →
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contrib { background: var(--paper-2); }
+
+  .contrib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+  .contrib-col {
+    background: var(--paper);
+    border: 1.5px solid var(--grey-line);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.4rem;
+  }
+  .contrib-col--want { border-color: var(--accent); box-shadow: 4px 4px 0 var(--accent-soft); }
+  .contrib-col--dont { border-color: var(--grey-soft); }
+
+  .contrib-col h3 {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+  .contrib-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+  .contrib-col li { display: flex; gap: 0.7rem; color: var(--ink-soft); font-size: 0.96rem; line-height: 1.5; }
+  .contrib-col li svg { flex-shrink: 0; margin-top: 0.2rem; }
+
+  .contrib-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

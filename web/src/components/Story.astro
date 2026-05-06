@@ -1,0 +1,147 @@
+---
+const milestones = [
+  {
+    version: 'v0.1.0',
+    title: 'The first release',
+    body: 'Opus orchestrator handled everything. Worked, but the orchestrator was slow on misuse cases — it would try to produce a phased plan even for analysis questions, stalling for tens of seconds.',
+    lesson: 'A heavyweight orchestrator is wrong for routing. The right tool is a fast classifier, not a deep planner.',
+  },
+  {
+    version: 'v0.1.2',
+    title: 'Sonnet front-door agent',
+    body: 'Added a Sonnet agent in front of the Opus orchestrator to classify and refuse misuse fast. Still slow because forking ANY agent adds latency — process spawn, context transfer, model warm-up. The fix didn\'t fix.',
+    lesson: 'Forking is the latency cost, not model size. Stacking specialist agents only makes it worse.',
+  },
+  {
+    version: 'v0.1.3',
+    title: 'Non-forked smart skill',
+    body: 'Removed the forking front-door entirely. /yukti:smart is now a non-forked skill — its routing logic runs in your existing Claude Code session, no extra fork. Analysis questions answered at plain-chat speed. Code changes still fork to the specialist pipeline (justified — that\'s where the savings live).',
+    lesson: 'For routing, the fastest fork is no fork.',
+  },
+];
+---
+
+<section class="story" id="story" aria-labelledby="story-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>The story</span>
+    <h2 id="story-h" data-reveal>Three architecture iterations in one day.</h2>
+    <p class="story-lead" data-reveal>
+      Real users hit slowness on a v0.1.0 prompt the same evening of release. Each iteration was a response to a specific complaint, with the receipt in the commit log. Honest changelogs, no marketing spin.
+    </p>
+
+    <ol class="timeline" data-reveal>
+      {milestones.map((m, i) => (
+        <li class="milestone" style={`--delay: ${i * 100}ms`}>
+          <div class="milestone-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="32" height="32" fill="none">
+              <circle cx="16" cy="16" r="14" stroke="var(--ink)" stroke-width="2" fill="var(--paper)" />
+              <circle cx="16" cy="16" r="6" fill="var(--accent)" />
+            </svg>
+          </div>
+          <div class="milestone-content">
+            <header>
+              <span class="milestone-version">{m.version}</span>
+              <h3>{m.title}</h3>
+            </header>
+            <p>{m.body}</p>
+            <p class="lesson">
+              <span class="lesson-label">Lesson:</span> {m.lesson}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <p class="story-foot" data-reveal>
+      Read the full commit log at <a href="https://github.com/akii09/yukti/commits/main" target="_blank" rel="noopener">github.com/akii09/yukti/commits</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .story { background: var(--paper); }
+
+  .story-lead {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    margin: 1.25rem 0 3rem;
+  }
+
+  .timeline {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background-image: linear-gradient(to bottom, var(--grey-soft) 50%, transparent 50%);
+    background-size: 2px 8px;
+  }
+
+  .milestone {
+    position: relative;
+    padding-left: 60px;
+    padding-bottom: 2.5rem;
+  }
+  .milestone:last-child { padding-bottom: 0; }
+
+  .milestone-mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--paper);
+    z-index: 1;
+  }
+
+  .milestone-content header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .milestone-version {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+  }
+  .milestone-content h3 {
+    font-family: var(--font-body);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--ink);
+  }
+  .milestone-content p {
+    color: var(--ink-soft);
+    margin: 0 0 0.6rem;
+  }
+  .lesson {
+    border-left: 3px solid var(--accent);
+    padding: 0.4rem 0 0.4rem 0.85rem;
+    background: var(--paper-2);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+  .lesson-label {
+    font-family: var(--font-display);
+    color: var(--accent-ink);
+    font-size: 1.15rem;
+    margin-right: 0.3rem;
+  }
+
+  .story-foot { color: var(--grey); font-size: 0.92rem; }
+</style>

@@ -1,0 +1,167 @@
+---
+const steps = [
+  { label: 'Explore', model: 'Haiku', sub: 'Find files', x: 60, color: 'var(--grey)' },
+  { label: 'Plan', model: 'Opus', sub: 'Phased plan', x: 200, color: 'var(--accent-ink)' },
+  { label: 'You approve', model: 'human', sub: 'Quality firewall', x: 360, color: 'var(--ink)' },
+  { label: 'Implement', model: 'Sonnet', sub: 'Per phase + verify', x: 520, color: 'var(--accent)' },
+  { label: 'Review', model: 'Opus', sub: 'P0/P1/P2/P3', x: 680, color: 'var(--accent-ink)' },
+];
+---
+
+<section class="pipeline" id="what-it-does" aria-labelledby="pipeline-h">
+  <div class="container">
+    <span class="eyebrow" data-reveal>How it works</span>
+    <h2 id="pipeline-h" data-reveal>One task, the right model at every step.</h2>
+    <p class="section-lead" data-reveal>
+      <code>/yukti:smart &lt;task&gt;</code> classifies your request and runs it through a pipeline of specialist subagents. Code changes go through five stages — each on the cheapest model that does the step well. Analysis questions are answered directly in your current session, no extra wait.
+    </p>
+
+    <div class="diagram-wrap" data-reveal>
+      <svg
+        class="diagram"
+        viewBox="0 0 740 220"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-label="Pipeline diagram: explore, plan, you approve, implement, review"
+      >
+        <!-- Connector line - drawn via animation -->
+        <path
+          id="pipeline-track"
+          d="M 60 100 Q 130 80, 200 100 T 360 100 T 520 100 T 680 100"
+          fill="none"
+          stroke="var(--grey-soft)"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-dasharray="4 5"
+          class="pipe-track"
+        />
+
+        {steps.map((s, i) => (
+          <g class={`pipe-step pipe-step-${i}`} transform={`translate(${s.x}, 100)`}>
+            <circle r="22" fill="var(--paper)" stroke={s.color} stroke-width="2.4" />
+            <circle r="6" fill={s.color} class="pipe-dot" />
+            <text y="-32" text-anchor="middle" class="pipe-label" font-family="var(--font-display)">
+              {s.label}
+            </text>
+            <text y="44" text-anchor="middle" class="pipe-model" font-family="var(--font-mono)" fill={s.color}>
+              {s.model}
+            </text>
+            <text y="60" text-anchor="middle" class="pipe-sub" font-family="var(--font-body)" fill="var(--grey)">
+              {s.sub}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+
+    <p class="diagram-note" data-reveal>
+      The orchestrator's tool list is restricted to <code>Agent</code>, <code>Read</code>, <code>Bash</code> — it physically <em>cannot</em> implement code itself. It can only delegate. That's enforced by the harness, not the prompt.
+    </p>
+  </div>
+</section>
+
+<style>
+  .pipeline {
+    background: var(--paper);
+    border-top: 1px solid var(--grey-line);
+    border-bottom: 1px solid var(--grey-line);
+  }
+  .pipeline .container { padding-top: clamp(3.5rem, 7vw, 5.5rem); padding-bottom: clamp(3.5rem, 7vw, 5.5rem); }
+
+  h2 { max-width: 16ch; }
+
+  .section-lead {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    font-size: 1.08rem;
+    margin: 1.25rem 0 2.5rem;
+  }
+  .section-lead code {
+    background: var(--paper-2);
+    border: 1px solid var(--grey-line);
+    color: var(--ink);
+  }
+
+  .diagram-wrap {
+    overflow-x: auto;
+    margin: 1rem 0 2rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .diagram {
+    width: 100%;
+    min-width: 720px;
+    height: auto;
+    overflow: visible;
+  }
+
+  .pipe-label {
+    font-size: 22px;
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .pipe-model {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .pipe-sub {
+    font-size: 11px;
+  }
+
+  /* Initial state for animation */
+  .pipe-track {
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+  }
+  .pipe-step { opacity: 0; transform-box: fill-box; transform-origin: center; }
+  .pipe-dot { transform-origin: center; transform: scale(0); }
+
+  .diagram-wrap.is-visible .pipe-track {
+    animation: drawTrack 1.6s ease-out forwards;
+  }
+  .diagram-wrap.is-visible .pipe-step {
+    animation: stepIn 0.5s ease-out forwards;
+  }
+  .diagram-wrap.is-visible .pipe-step-0 { animation-delay: 0.2s; }
+  .diagram-wrap.is-visible .pipe-step-1 { animation-delay: 0.55s; }
+  .diagram-wrap.is-visible .pipe-step-2 { animation-delay: 0.85s; }
+  .diagram-wrap.is-visible .pipe-step-3 { animation-delay: 1.15s; }
+  .diagram-wrap.is-visible .pipe-step-4 { animation-delay: 1.45s; }
+
+  .diagram-wrap.is-visible .pipe-dot {
+    animation: dotPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .diagram-wrap.is-visible .pipe-step-0 .pipe-dot { animation-delay: 0.5s; }
+  .diagram-wrap.is-visible .pipe-step-1 .pipe-dot { animation-delay: 0.85s; }
+  .diagram-wrap.is-visible .pipe-step-2 .pipe-dot { animation-delay: 1.15s; }
+  .diagram-wrap.is-visible .pipe-step-3 .pipe-dot { animation-delay: 1.45s; }
+  .diagram-wrap.is-visible .pipe-step-4 .pipe-dot { animation-delay: 1.75s; }
+
+  @keyframes drawTrack {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes stepIn {
+    to { opacity: 1; }
+  }
+  @keyframes dotPop {
+    to { transform: scale(1); }
+  }
+
+  .diagram-note {
+    color: var(--grey);
+    font-size: 0.94rem;
+    max-width: 64ch;
+    border-left: 3px solid var(--accent);
+    padding: 0.5rem 0 0.5rem 1rem;
+    background: var(--paper-2);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .diagram-note em { color: var(--ink); font-style: italic; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pipe-track { stroke-dashoffset: 0; }
+    .pipe-step { opacity: 1; }
+    .pipe-dot { transform: scale(1); }
+  }
+</style>
