@@ -48,11 +48,16 @@ If a feature's reliability depends on undocumented Claude Code internals, **it d
 
 These are non-negotiable when an AI is making changes in this repo.
 
-1. **Do not `git push`.** Ever, automatically. Make commits if approved, then stop and let the user push. The only exception is when the user explicitly approves a push in their *current* reply.
+1. **Do not run any state-changing git or `gh` command.** This is the strictest rule.
+   - **Forbidden**: `git commit`, `git push`, `git tag`, `git add`, `git rm`, `git mv`, `git rebase`, `git merge`, `git cherry-pick`, `git revert`, `git reset`, `git checkout` (to switch branches or restore files), `git stash`, `gh release create`, `gh pr create`, `gh pr merge`, `gh issue close`, etc.
+   - **Allowed (read-only)**: `git status`, `git log`, `git diff`, `git show`, `git branch --list`, `git tag --list`, `git remote -v`, `git ls-files`, `git rev-parse`, `git config --get`, `gh pr view`, `gh issue view`, `gh release view`.
+   - When you would normally run a state-changing command, instead output the exact command for the user to run, with a suggested commit message inline. The user runs every git operation manually.
+   - **Manual verification is required before every commit.** After making changes, stop. The user verifies and decides what to stage, what message to use, and when to commit/push/tag.
+   - Prior approval does **not** generalize. Each git boundary needs explicit user action — no inferring "they said yes once, they'd say yes again."
 2. **Risk-averse posture.** When you have a choice between a clever-but-risky approach and a boring-but-reliable one, pick the boring one and surface the tradeoff. This is the user's "dream project" being taken open-source — over-engineering and undocumented-behavior bets are off the table.
 3. **Plan-driven work.** Non-trivial changes go through [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md): goal → tasks → exit criteria → **verification steps the user can run**. Update the plan when reality changes.
-4. **Verify before claiming done.** If the plan has verification commands, run them. If a verification surfaces a defect, fix it and re-run, don't paper over it.
-5. **One commit per logical change.** Don't batch unrelated edits.
+4. **Verify before reporting done.** If the plan has verification commands, run them yourself (read-only operations only). If a verification surfaces a defect, fix the file and re-run, don't paper over it. Surfacing a real defect during verification is a *good* outcome, not a setback.
+5. **One commit per logical change** — when *suggesting* commits to the user. Don't bundle unrelated edits into a single suggested commit.
 6. **Honest scope and honest claims.** Don't over-promise in code, comments, README, or docs. The README's "honest benchmarks" voice is the project's voice.
 
 ---
