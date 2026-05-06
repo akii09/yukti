@@ -39,6 +39,7 @@ fi
 
 if [ -z "$VERIFY_CMD" ]; then
   cd "$PROJECT_DIR"
+  # JS/TS — looks for a `typecheck` script in package.json
   if [ -f "pnpm-lock.yaml" ] && [ -f "package.json" ]; then
     if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
       VERIFY_CMD="pnpm typecheck"
@@ -51,6 +52,22 @@ if [ -z "$VERIFY_CMD" ]; then
     if jq -e '.scripts.typecheck' package.json >/dev/null 2>&1; then
       VERIFY_CMD="yarn typecheck"
     fi
+  # Go — `go vet` is fast (no codegen) and catches common issues
+  elif [ -f "go.mod" ] && command -v go >/dev/null 2>&1; then
+    VERIFY_CMD="go vet ./..."
+  # Rust — `cargo check` is faster than build/test, catches type errors
+  elif [ -f "Cargo.toml" ] && command -v cargo >/dev/null 2>&1; then
+    VERIFY_CMD="cargo check --quiet"
+  # Python — only run a typecheck if the project has a typecheck config
+  # (no universal Python typecheck command; we won't guess)
+  elif command -v mypy >/dev/null 2>&1 && {
+         [ -f "mypy.ini" ] \
+      || [ -f ".mypy.ini" ] \
+      || { [ -f "pyproject.toml" ] && grep -q '^\[tool\.mypy\]' pyproject.toml 2>/dev/null; }
+       }; then
+    VERIFY_CMD="mypy ."
+  elif [ -f "pyrightconfig.json" ] && command -v pyright >/dev/null 2>&1; then
+    VERIFY_CMD="pyright"
   fi
 fi
 
