@@ -17,16 +17,6 @@ const tabs = [
     cmds: ['curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash'],
     note: 'For locked-down environments without marketplace access, or when you want Yukti pinned in one specific repo. Skills are NOT namespaced in this mode (e.g. /smart instead of /yukti:smart).',
   },
-  {
-    id: 'install-dev',
-    label: 'Plugin development',
-    pill: null,
-    cmds: [
-      'git clone https://github.com/akii09/yukti.git',
-      'claude --plugin-dir ./yukti',
-    ],
-    note: 'For evaluating a fork or developing changes against your own clone.',
-  },
 ];
 
 const examples = [
@@ -40,11 +30,12 @@ const examples = [
 <section class="get-started" id="get-started" aria-labelledby="gs-h">
   <div class="container">
     <span class="eyebrow" data-reveal>Get started</span>
-    <h2 id="gs-h" data-reveal>Three install paths. Pick one.</h2>
+    <h2 id="gs-h" data-reveal>Two install paths. Pick one.</h2>
 
     <div class="install-tabs" data-reveal role="region" aria-label="Installation method">
       {/* Radios live as direct siblings of .tab-labels and .tab-panels so the
-          CSS general-sibling selector (~) can flip the active tab without JS. */}
+          CSS general-sibling selector (~) can flip the active tab without JS.
+          See web/CLAUDE.md "Astro scoping gotcha" for the comma-grouping rule. */}
       {tabs.map((t, i) => (
         <input
           type="radio"
@@ -68,7 +59,19 @@ const examples = [
       <div class="tab-panels">
         {tabs.map((t) => (
           <div class={`tab-panel tab-panel--${t.id}`} role="tabpanel" aria-labelledby={t.id}>
-            <pre><code>{t.cmds.join('\n')}</code></pre>
+            <div class="code-block">
+              <pre><code>{t.cmds.join('\n')}</code></pre>
+              <button class="copy-btn" type="button" aria-label={`Copy ${t.label} install command`}>
+                <svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="8" y="8" width="12" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16 6 V 4 a 2 2 0 0 0 -2 -2 H 6 a 2 2 0 0 0 -2 2 v 12 a 2 2 0 0 0 2 2 h 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg class="check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12 L 10 17 L 20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="copy-text">Copy</span>
+              </button>
+            </div>
             <p class="tab-note">{t.note}</p>
           </div>
         ))}
@@ -93,6 +96,10 @@ const examples = [
         </li>
       ))}
     </ul>
+
+    <p class="dev-note" data-reveal>
+      Building / hacking on Yukti? See the <a href="https://github.com/akii09/yukti#plugin-development" target="_blank" rel="noopener">plugin-development setup</a> in the README.
+    </p>
   </div>
 </section>
 
@@ -106,14 +113,13 @@ const examples = [
   }
 
   /* Hide the radios themselves but keep them in normal flow position so
-     focus rings can be approximated via :has() on the label. */
+     focus rings can be shown via :focus-visible on the paired label. */
   .tab-radio {
     position: absolute;
     width: 1px;
     height: 1px;
     opacity: 0;
     pointer-events: none;
-    /* Avoid layout shift / scroll jump on focus */
     top: 0;
     left: 0;
     margin: 0;
@@ -142,7 +148,7 @@ const examples = [
     font-size: 0.95rem;
     cursor: pointer;
     transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
-    margin-bottom: -1.5px; /* overlap the underline border on the active tab */
+    margin-bottom: -1.5px;
     user-select: none;
     position: relative;
   }
@@ -167,23 +173,17 @@ const examples = [
   /* All panels hidden by default */
   .tab-panel { display: none; }
 
-  /* Wrapper that holds the panels (also wraps the active styling) */
   .tab-panels {
     background: var(--paper-2);
     border: 1.5px solid var(--grey-line);
-    border-top-color: transparent; /* visually merges with the active tab */
+    border-top-color: transparent;
     border-radius: 0 var(--radius) var(--radius) var(--radius);
     padding: 1.4rem 1.4rem 1.5rem;
   }
 
-  /* Active state: the radio that is :checked decides which label is active
-     and which panel is visible. Selectors rely on the radios being DIRECT
-     siblings of .tab-labels and .tab-panels (no fieldset wrapper).
-
-     IMPORTANT: each :checked rule lives in its OWN ruleset. Comma-grouping
-     these triggers an Astro CSS scoper bug that drops the leading
-     `#id:checked ~` from the first selector — making one tab always appear
-     active. Verbose but correct. */
+  /* Active state — split into one ruleset per ID to avoid Astro CSS scoper
+     bug that drops the leading `#id:checked ~` from the FIRST selector when
+     comma-grouping. See web/CLAUDE.md "Astro scoping gotcha". */
 
   #install-marketplace:checked ~ .tab-labels label[for="install-marketplace"] {
     color: var(--ink);
@@ -197,12 +197,6 @@ const examples = [
     border-color: var(--grey-line);
     border-bottom-color: var(--paper-2);
   }
-  #install-dev:checked ~ .tab-labels label[for="install-dev"] {
-    color: var(--ink);
-    background: var(--paper-2);
-    border-color: var(--grey-line);
-    border-bottom-color: var(--paper-2);
-  }
 
   #install-marketplace:checked ~ .tab-panels .tab-panel--install-marketplace {
     display: block;
@@ -210,12 +204,8 @@ const examples = [
   #install-curl:checked ~ .tab-panels .tab-panel--install-curl {
     display: block;
   }
-  #install-dev:checked ~ .tab-panels .tab-panel--install-dev {
-    display: block;
-  }
 
-  /* Keyboard focus ring on the label paired with the focused radio.
-     Same split-rule workaround for the Astro scoping bug. */
+  /* Keyboard focus ring on the paired label */
   #install-marketplace:focus-visible ~ .tab-labels label[for="install-marketplace"] {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -224,16 +214,74 @@ const examples = [
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-  #install-dev:focus-visible ~ .tab-labels label[for="install-dev"] {
+
+  /* === Code block with copy button === */
+  .code-block {
+    position: relative;
+    margin: 0 0 1rem;
+  }
+  .code-block pre {
+    margin: 0;
+    font-size: 0.92rem;
+    padding: 0.95rem 1.1rem;
+    padding-right: 5.5rem; /* leave room for the copy button */
+  }
+  /* Floating "chip" button — paper-colored on dark pre for clear visibility.
+     No translucent whites; explicit colors so currentColor / opacity quirks
+     don't cause a "where's the button?" moment. */
+  .copy-btn {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1.5px solid var(--paper);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+    line-height: 1;
+    z-index: 2;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  }
+  .copy-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .copy-btn:active {
+    transform: translateY(1px);
+  }
+  .copy-btn:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-
-  .tab-panel pre {
-    margin: 0 0 1rem;
-    font-size: 0.92rem;
-    padding: 0.95rem 1.1rem;
+  .copy-btn .copy-icon,
+  .copy-btn .check-icon {
+    color: var(--ink);
+    flex-shrink: 0;
   }
+  .copy-btn .check-icon { display: none; }
+  /* "Copied" state — accent background, clear win signal */
+  .copy-btn.is-copied {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+  .copy-btn.is-copied .copy-icon { display: none; }
+  .copy-btn.is-copied .check-icon { display: inline-block; color: var(--paper); }
+  .copy-btn.is-copied:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+  }
+
   .tab-note {
     color: var(--ink-soft);
     font-size: 0.94rem;
@@ -293,6 +341,15 @@ const examples = [
     font-size: 0.86rem;
   }
 
+  .dev-note {
+    margin: 2rem 0 0;
+    color: var(--grey);
+    font-size: 0.9rem;
+  }
+  .dev-note a {
+    color: var(--accent-ink);
+  }
+
   @media (max-width: 640px) {
     .example {
       grid-template-columns: 1fr;
@@ -302,5 +359,56 @@ const examples = [
     .tab-label { font-size: 0.88rem; padding: 0.55rem 0.85rem; }
     .tab-pill { font-size: 0.62rem; padding: 0.1rem 0.4rem; }
     .tab-panels { padding: 1.1rem 1.1rem 1.2rem; }
+    .code-block pre { padding-right: 4.2rem; font-size: 0.84rem; }
+    .copy-btn { padding: 0.28rem 0.5rem; font-size: 0.74rem; }
+    .copy-btn .copy-text { display: none; } /* icon-only on mobile */
   }
 </style>
+
+<script>
+  // Copy-to-clipboard for the install command code blocks.
+  // One handler for all `.copy-btn` buttons. No external deps.
+  document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const codeEl = btn.parentElement?.querySelector('pre code');
+      const text = codeEl?.textContent?.trim() ?? '';
+      if (!text) return;
+
+      let copied = false;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } else {
+          throw new Error('clipboard API unavailable');
+        }
+      } catch {
+        // Fallback for older browsers / non-secure contexts (e.g. file://).
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          copied = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch {
+          copied = false;
+        }
+      }
+
+      if (!copied) return;
+
+      btn.classList.add('is-copied');
+      const label = btn.querySelector('.copy-text');
+      const original = label?.textContent ?? 'Copy';
+      if (label) label.textContent = 'Copied';
+      setTimeout(() => {
+        btn.classList.remove('is-copied');
+        if (label) label.textContent = original;
+      }, 1600);
+    });
+  });
+</script>
