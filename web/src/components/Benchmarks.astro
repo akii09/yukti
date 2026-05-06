@@ -1,18 +1,22 @@
 ---
 const rows = [
-  { task: 'Add a typed UI feature (3 files)', baseline: '$0.80', yukti: '$0.31', delta: '−61%', good: true },
-  { task: 'Refactor a utility module (5 files)', baseline: '$1.20', yukti: '$0.52', delta: '−57%', good: true },
-  { task: 'Debug a flaky test', baseline: '$0.45', yukti: '$0.42', delta: '−7%', good: false },
+  { task: 'Add a typed UI feature (3 files)', baseline: '~$0.80', yukti: '~$0.31', delta: '~−60%', good: true },
+  { task: 'Refactor a utility module (5 files)', baseline: '~$1.20', yukti: '~$0.52', delta: '~−55%', good: true },
+  { task: 'Debug a flaky test', baseline: '~$0.45', yukti: '~$0.42', delta: '~−5%', good: false },
 ];
 ---
 
 <section class="benchmarks" id="benchmarks" aria-labelledby="bench-h">
   <div class="container">
-    <span class="eyebrow" data-reveal>Honest benchmarks</span>
-    <h2 id="bench-h" data-reveal>What we measured. What we didn't fudge.</h2>
+    <span class="eyebrow" data-reveal>Benchmarks</span>
+    <h2 id="bench-h" data-reveal>Illustrative now. Measured next.</h2>
+
+    <p class="bench-status" data-reveal>
+      <strong>Status: validation in progress.</strong> The numbers below are <em>target</em> costs based on Anthropic's per-model pricing applied to typical token mixes — not measurements from real usage. <strong>v0.2.0</strong> ships local opt-in telemetry; this section will be replaced with real data once we have ≥30 logged runs.
+    </p>
 
     <p class="bench-lead" data-reveal>
-      These are illustrative numbers from three task types Claude Code users hit every day. <strong>Your repo will vary.</strong> If your numbers contradict ours, we want to hear about it — file a <a href="https://github.com/akii09/yukti/issues/new?template=benchmark.md" target="_blank" rel="noopener">benchmark report</a> and we will not delete unflattering data.
+      <strong>Your repo will vary.</strong> If your real numbers contradict the targets here, that's the most valuable thing you can tell us — file a <a href="https://github.com/akii09/yukti/issues/new?template=benchmark.md" target="_blank" rel="noopener">benchmark report</a> and we will not delete unflattering data.
     </p>
 
     <div class="bench-table-wrap" data-reveal>
@@ -20,9 +24,9 @@ const rows = [
         <thead>
           <tr>
             <th scope="col">Task type</th>
-            <th scope="col">Always-Opus</th>
-            <th scope="col">Yukti <code>/smart</code></th>
-            <th scope="col">Cost reduction</th>
+            <th scope="col">Always-Opus (illustrative)</th>
+            <th scope="col">Yukti <code>/smart</code> (illustrative)</th>
+            <th scope="col">Target reduction</th>
           </tr>
         </thead>
         <tbody>
@@ -44,16 +48,16 @@ const rows = [
 
     <div class="bench-disclaimers" data-reveal>
       <div class="disc">
-        <h3>Where Yukti shines</h3>
-        <p>Routine code work — adding features, refactoring, fixing bugs in well-organized code. Quality is on par with always-Opus. Cost drops by half.</p>
+        <h3>Designed to shine on</h3>
+        <p>Routine code work — adding features, refactoring, fixing bugs in well-organized code. The implementer (Sonnet) handles heavy edits; explorer (Haiku) does cheap grep/glob; planner + reviewer (Opus) bracket the loop.</p>
       </div>
       <div class="disc">
-        <h3>Where it barely helps</h3>
+        <h3>Marginal benefit on</h3>
         <p>Deep debugging where most of the work is Opus reasoning anyway. Yukti won't slow you down, but the savings tail off — sometimes to single digits.</p>
       </div>
       <div class="disc">
-        <h3>Where it loses ~5%</h3>
-        <p>Hard, novel algorithms or gnarly multi-file refactors. Workaround: invoke <code>/yukti:plan</code> directly (Opus) and review the plan carefully before approving.</p>
+        <h3>Hard / novel work</h3>
+        <p>Invoke <code>/yukti:plan</code> directly on Opus and review the plan carefully before approving. The full pipeline can lose ~5% on novel algorithms vs always-Opus.</p>
       </div>
     </div>
   </div>
@@ -62,10 +66,23 @@ const rows = [
 <style>
   .benchmarks { background: var(--paper-2); border-top: 1px solid var(--grey-line); border-bottom: 1px solid var(--grey-line); }
 
+  .bench-status {
+    color: var(--ink);
+    max-width: 68ch;
+    margin: 1.25rem 0 1rem;
+    padding: 0.85rem 1.1rem;
+    border: 1.5px dashed var(--accent);
+    border-radius: var(--radius);
+    background: var(--paper);
+    font-size: 0.96rem;
+  }
+  .bench-status strong { color: var(--accent-ink); }
+  .bench-status em { color: var(--ink-soft); font-style: italic; }
+
   .bench-lead {
     color: var(--ink-soft);
     max-width: 64ch;
-    margin: 1.25rem 0 2rem;
+    margin: 0.5rem 0 2rem;
   }
   .bench-lead strong { font-weight: 600; background: linear-gradient(transparent 60%, var(--accent-soft) 60%); padding: 0 0.15em; }
 

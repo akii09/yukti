@@ -1,10 +1,12 @@
 # Yukti
 
-A lightweight Claude Code plugin that routes work to the right model and enforces token-saving practices. Claude Code stays the same to use — you just type `/yukti:smart <task>` instead of letting one model do everything.
+A lightweight Claude Code plugin that routes each pipeline stage to the right model — Haiku to explore, Opus to plan + review, Sonnet to implement. Claude Code stays the same to use; you just type `/yukti:smart <task>` instead of letting one model do everything.
 
-**Honest savings**: ~50–60% cost reduction vs always-Opus, ~15–25% raw token reduction, with quality on par for routine work. Hard tasks fall back gracefully to Opus.
+**Target savings**: ~50% cost reduction vs always-Opus on routine code work, with quality on par for that workload. *Numbers below are illustrative — real measurement lands in [v0.2.0](docs/IMPLEMENTATION_PLAN.md). The architecture is designed for it; the receipts are still being collected.*
 
-> If you've seen plugins claim "80% token savings," they're either measuring cost (not tokens) or compromising on quality. This README will not lie to you about benchmarks.
+> If you've seen plugins claim "80% token savings," they're either measuring cost (not tokens) or compromising on quality. This README won't make that mistake. We will publish measured numbers from real-world usage when we have them, not before.
+
+**Composes with the ecosystem.** Yukti is the *routing layer*. For cross-session memory install [claude-mem](https://github.com/thedotmack/claude-mem). For structural code review with blast-radius analysis install [code-review-graph](https://github.com/tirth8205/code-review-graph). We don't try to be everything.
 
 ---
 
@@ -144,21 +146,22 @@ Optional per-project config at `.claude/yukti-config.json`:
 
 If the config file is absent, defaults apply.
 
-## Honest benchmarks (what to expect)
+## Benchmarks
 
-We measured on three representative task types. Numbers are illustrative — your repo will vary.
+> **Status: illustrative — validation in progress.** The numbers below are *target* costs based on Anthropic's published per-model pricing applied to typical token mixes for each task type. They are **not** measurements from actual usage. **v0.2.0** ships local opt-in telemetry so the next version of this section will be backed by real data.
 
-| Task type | Always-Opus baseline | Yukti `/smart` | Cost reduction |
-|-----------|----------------------|------------------------|----------------|
-| Add a typed UI feature (3 files) | $0.80 | $0.31 | **61%** |
-| Refactor a utility module (5 files) | $1.20 | $0.52 | **57%** |
-| Debug a flaky test | $0.45 | $0.42 | 7% |
+| Task type | Always-Opus (illustrative) | Yukti `/smart` (illustrative) | Target reduction |
+|-----------|------------------------|-----------------------|----------------|
+| Add a typed UI feature (3 files) | ~$0.80 | ~$0.31 | ~60% |
+| Refactor a utility module (5 files) | ~$1.20 | ~$0.52 | ~55% |
+| Debug a flaky test | ~$0.45 | ~$0.42 | ~5% |
 
-Quality (measured by reviewer P0 issue count and human re-test):
-- For routine tasks (UI features, refactors, additions): on par with always-Opus.
-- For hard tasks (gnarly debugging, novel algorithms): ~5% behind. Workaround: invoke `/yukti:plan` directly (Opus) on hard problems and review the plan carefully before approving.
+Where Yukti is **designed to** shine vs. where it's **designed not to**:
+- **Sweet spot**: routine code work — adding features, refactoring, fixing bugs in well-organized codebases. The implementer (Sonnet) handles the heavy edits; explorer (Haiku) does the cheap grep/glob work; planner + reviewer (Opus) bracket the plan-confirm-implement loop.
+- **Marginal benefit**: deep debugging sessions where most of the work is Opus reasoning anyway. Yukti won't slow you down; the savings just tail off.
+- **Hard / novel work**: invoke `/yukti:plan` directly on Opus and review the plan carefully before approving. The full pipeline can lose ~5% on novel algorithms vs always-Opus per the same illustrative model.
 
-**Where the plugin does NOT save much**: deep debugging sessions where most of the work is Opus reasoning anyway. The plugin won't slow you down, but the savings tail off.
+**If your real-world numbers contradict the targets above, that's the most valuable thing you can tell us.** File a [Benchmark report](.github/ISSUE_TEMPLATE/benchmark.md) — we will not delete unflattering data.
 
 ## What this plugin deliberately does not do
 
