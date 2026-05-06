@@ -2,5 +2,6 @@
   "capReadLines": 500,
   "stopHookEnabled": true,
   "verifyCommand": null,
-  "briefEnabled": true
+  "briefEnabled": true,
+  "telemetry": "off"
 }

@@ -97,7 +97,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "capReadLines": 500,
   "stopHookEnabled": true,
   "verifyCommand": null,
-  "briefEnabled": true
+  "briefEnabled": true,
+  "telemetry": "off"
 }
 JSON
   echo "==> Created default config at $CONFIG_FILE"
@@ -111,7 +112,7 @@ Files placed:
   $TARGET/agents/         (5 specialist subagents)
   $TARGET/skills/         (6 skills: smart, explore, plan, implement, review, status)
   $TARGET/hooks/          (PreToolUse, SessionStart, Stop hook configs)
-  $TARGET/bin/            (cap-read, session-brief, stop-verify scripts)
+  $TARGET/bin/            (cap-read, session-brief, stop-verify, yukti-telemetry-record, yukti-savings-summary)
   $TARGET/yukti-config.json  (per-project config — edit as needed)
 
 Skills are namespaced. Note: in the fallback (non-plugin) install, skills are
@@ -128,6 +129,11 @@ namespace, e.g. /yukti:smart.
 
 A session brief auto-injects on Claude Code start (branch, git status,
 in-flight task). Disable via "briefEnabled": false in $TARGET/yukti-config.json.
+
+Telemetry is off by default. To opt in to local-only logging of your
+cost savings, set "telemetry": "local" in $TARGET/yukti-config.json.
+The log file lives at ~/.claude/yukti-telemetry.jsonl and is never uploaded.
+Run /status (or /yukti:status) to see your savings summary.
 
 To remove: delete $TARGET/agents, $TARGET/skills, $TARGET/hooks, $TARGET/bin,
 and remove the hook entries from $SETTINGS_FILE.
