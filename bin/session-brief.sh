@@ -100,24 +100,31 @@ if [ -f "$PROJECT_DIR/CLAUDE.md" ] || [ -f "$PROJECT_DIR/.claude/CLAUDE.md" ]; t
   MEMORY_NOTES="CLAUDE.md (auto-loaded)"
 fi
 
-# Built-in auto memory: in Claude Code 2.1.59+ defaults on at
-# ~/.claude/projects/<derived>/memory/MEMORY.md. We don't know the exact
-# derivation rule; just say "enabled by default" if no opt-out env var.
+# Built-in auto memory: Claude Code 2.1.59+ stores per-project memory at
+# ~/.claude/projects/<key>/memory/MEMORY.md, where <key> is the project's
+# git-root (or cwd, if not a git repo) with `/` replaced by `-`.
+# Reference: https://code.claude.com/docs/en/memory.md
 if [ "${CLAUDE_CODE_DISABLE_AUTO_MEMORY:-0}" != "1" ]; then
-  if [ -n "$MEMORY_NOTES" ]; then
-    MEMORY_NOTES="$MEMORY_NOTES  ·  auto memory (built-in)"
+  if [ "$IS_GIT_REPO" = "true" ]; then
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PROJECT_DIR")
   else
-    MEMORY_NOTES="auto memory (built-in)"
+    REPO_ROOT="$PROJECT_DIR"
+  fi
+  PROJECT_KEY=$(printf '%s' "$REPO_ROOT" | tr '/' '-')
+  AUTO_MEM_FILE="$HOME/.claude/projects/$PROJECT_KEY/memory/MEMORY.md"
+  if [ -f "$AUTO_MEM_FILE" ]; then
+    AUTO_MEM_LINES=$(wc -l < "$AUTO_MEM_FILE" 2>/dev/null | tr -d ' ' || echo "?")
+    MEMORY_NOTES="${MEMORY_NOTES:+$MEMORY_NOTES  ·  }auto memory (active, $AUTO_MEM_LINES lines)"
+  else
+    MEMORY_NOTES="${MEMORY_NOTES:+$MEMORY_NOTES  ·  }auto memory (built-in, no entries yet)"
   fi
 fi
 
 # claude-mem detection (heuristic: presence of common claude-mem files).
+# claude-mem is a richer-features alternative — Yukti complements rather than
+# duplicates. https://github.com/thedotmack/claude-mem
 if [ -d "$HOME/.claude-mem" ] || [ -f "$PROJECT_DIR/.claude/claude-mem-config.json" ]; then
-  if [ -n "$MEMORY_NOTES" ]; then
-    MEMORY_NOTES="$MEMORY_NOTES  ·  claude-mem (detected)"
-  else
-    MEMORY_NOTES="claude-mem (detected)"
-  fi
+  MEMORY_NOTES="${MEMORY_NOTES:+$MEMORY_NOTES  ·  }claude-mem (detected)"
 fi
 
 if [ -n "$MEMORY_NOTES" ]; then
