@@ -6,15 +6,15 @@
 # (e.g. private repos, older Claude Code versions, CI environments).
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/akashree/yukti/main/install.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash
 #
 # Or from a local clone:
 #   ./install.sh
 
 set -euo pipefail
 
-REPO_RAW="https://raw.githubusercontent.com/akashree/yukti/main"
-REPO_GIT="https://github.com/akashree/yukti.git"
+REPO_RAW="https://raw.githubusercontent.com/akii09/yukti/main"
+REPO_GIT="https://github.com/akii09/yukti.git"
 
 PROJECT_DIR="${1:-$(pwd)}"
 TARGET="$PROJECT_DIR/.claude"

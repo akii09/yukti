@@ -39,21 +39,21 @@ This plugin is the codification of practices that Claude itself recommended for 
 ### Via plugin marketplace (recommended)
 
 ```bash
-/plugin marketplace add akashree/yukti
-/plugin install yukti@akashree-yukti
+/plugin marketplace add akii09/yukti
+/plugin install yukti@akii09-yukti
 ```
 
 ### Local / development
 
 ```bash
-git clone https://github.com/akashree/yukti.git
+git clone https://github.com/akii09/yukti.git
 claude --plugin-dir ./yukti
 ```
 
 ### Fallback (copy files into your project's .claude/)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/akashree/yukti/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/akii09/yukti/main/install.sh | bash
 ```
 
 This drops the agents, skills, and hooks into the current project's `.claude/` directory. Less clean than the plugin install but works without a marketplace.
@@ -194,7 +194,7 @@ MIT. Use it, fork it, ship it.
 
 ## Contributing
 
-Issues and PRs welcome at https://github.com/akashree/yukti. The areas where help is most useful:
+Issues and PRs welcome at https://github.com/akii09/yukti. The areas where help is most useful:
 
 - **More verification command presets** for non-JS projects (Go, Rust, Python, etc.) so the Stop hook auto-detects them
 - **Real-world benchmarks** from your own usage — open an issue with the numbers
