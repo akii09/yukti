@@ -3,5 +3,6 @@
   "stopHookEnabled": true,
   "verifyCommand": null,
   "briefEnabled": true,
-  "telemetry": "off"
+  "telemetry": "off",
+  "routingHints": "off"
 }

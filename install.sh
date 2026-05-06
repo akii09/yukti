@@ -98,7 +98,8 @@ if [ ! -f "$CONFIG_FILE" ]; then
   "stopHookEnabled": true,
   "verifyCommand": null,
   "briefEnabled": true,
-  "telemetry": "off"
+  "telemetry": "off",
+  "routingHints": "off"
 }
 JSON
   echo "==> Created default config at $CONFIG_FILE"
@@ -111,8 +112,8 @@ cat <<EOF
 Files placed:
   $TARGET/agents/         (5 specialist subagents)
   $TARGET/skills/         (6 skills: smart, explore, plan, implement, review, status)
-  $TARGET/hooks/          (PreToolUse, SessionStart, Stop hook configs)
-  $TARGET/bin/            (cap-read, session-brief, stop-verify, yukti-telemetry-record, yukti-savings-summary)
+  $TARGET/hooks/          (PreToolUse, SessionStart, UserPromptSubmit, Stop hook configs)
+  $TARGET/bin/            (cap-read, session-brief, stop-verify, yukti-route-hint, yukti-telemetry-record, yukti-savings-summary)
   $TARGET/yukti-config.json  (per-project config — edit as needed)
 
 Skills are namespaced. Note: in the fallback (non-plugin) install, skills are
@@ -134,6 +135,12 @@ Telemetry is off by default. To opt in to local-only logging of your
 cost savings, set "telemetry": "local" in $TARGET/yukti-config.json.
 The log file lives at ~/.claude/yukti-telemetry.jsonl and is never uploaded.
 Run /status (or /yukti:status) to see your savings summary.
+
+Routing hints (UserPromptSubmit) are off by default. Set
+"routingHints": "advisory" to get gentle reminders to use /yukti:smart on
+prompts that look like code changes. "auto" attempts a stronger suggestion
+(best-effort; depends on the main agent following the hint — Claude Code
+hooks cannot directly invoke an agent).
 
 To remove: delete $TARGET/agents, $TARGET/skills, $TARGET/hooks, $TARGET/bin,
 and remove the hook entries from $SETTINGS_FILE.
