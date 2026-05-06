@@ -24,4 +24,3 @@ yukti-verify.*                 # mktemp output from stop-verify.sh
 # Other
 /docs
 CLAUDE-*.log
-CLAUDE.md
