@@ -108,23 +108,21 @@ If you want to run individual stages (e.g. just plan, or just review):
 | `/yukti:review` | Review uncommitted diff | Opus |
 | `/yukti:smart <task>` | Full pipeline | mixed |
 
-## When NOT to use Yukti
+## How `/yukti:smart` handles different requests
 
-`/yukti:smart` runs a five-stage pipeline (explore → plan → confirm → implement → review). That overhead pays off for **concrete code changes**. It does NOT pay off — and will often stall — for these:
+`/yukti:smart` is a single entry point for everything. A fast Sonnet **front-door** classifies what you typed and routes it to the right place — you don't need to memorize which sub-skill to call.
 
-| Don't use `/yukti:smart` for… | Use this instead |
-|---|---|
-| "Which of these two plans is current?" / comparison / analysis | Plain Claude Code (no `/yukti:` prefix) |
-| "Explain how function X works" | Plain Claude Code |
-| "Why is this test flaky?" (open-ended debugging without a known fix) | Plain Claude Code; switch to `/yukti:smart` once you know the fix |
-| One-line typo or rename in a single file | Plain Claude Code (overhead isn't worth it) |
-| "Find me the file that defines X" | `/yukti:explore` |
-| "Produce a plan for X but don't implement it" | `/yukti:plan` |
-| "Review what I just changed" | `/yukti:review` |
+| What you ask | What happens | Cost / time |
+|---|---|---|
+| "Add X", "Fix Y", "Refactor Z" (any concrete code change) | Routes to the full pipeline: explore → plan → **you confirm** → implement → review | Mostly Sonnet/Haiku with Opus for plan + review. Same as before. |
+| "Produce a plan to do X" (no implementation expected yet) | Routes to the planner only — returns a phased plan you can review | Opus (planner only) |
+| "Review what I just changed" | Routes to the reviewer on the current diff | Opus (reviewer only) |
+| "Where is X defined?" / "Which files use Y?" | Routes to the explorer | Haiku (cheap & fast) |
+| "Compare these two plans, which is current?" / "What's pending in this doc?" / "Explain how X works" | Front-door reads the relevant files and answers directly | Sonnet (fast, ~as good as plain chat for routine analysis) |
 
-If you do invoke `/yukti:smart` on one of the above by accident, the orchestrator's Step 0 classifier will refuse and suggest the right alternative — typically within a few seconds, before any expensive subagent runs. (And if it slips past the orchestrator, the planner has its own fail-fast.) But picking the right tool from the start saves you a refusal round-trip.
+**You don't need to phrase things in any particular way.** The front-door figures it out. If it picks wrong, the planner has a defense-in-depth check that catches misclassifications, and the front-door re-routes to a direct answer.
 
-**Rule of thumb**: if you can't phrase your request with a verb like *add / fix / refactor / remove / rename / port*, it's probably not a `/yukti:smart` task.
+If you specifically *want* to bypass auto-routing, the individual skills (`/yukti:explore`, `/yukti:plan`, `/yukti:implement`, `/yukti:review`) are still there as explicit overrides.
 
 ## Configuration
 

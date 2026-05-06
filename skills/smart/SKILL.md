@@ -1,12 +1,12 @@
 ---
 name: smart
-description: Run the full Yukti pipeline for a CODE CHANGE task (add/fix/refactor) — explore (Haiku), plan (Opus), confirm, implement (Sonnet), review (Opus). Saves ~50-60% cost vs always-Opus while preserving quality. NOT for analysis/comparison/explanation — use plain Claude Code for those.
+description: One-stop entry. Auto-routes any request to the right Yukti specialist — code changes go through the explore→plan→confirm→implement→review pipeline (Haiku/Opus/Sonnet/Opus); analysis questions are answered directly on Sonnet. Saves ~50-60% cost vs always-Opus on code work and answers questions roughly as fast as plain chat.
 context: fork
-agent: smart-orchestrator
+agent: front-door
 ---
 
-You are running the full Yukti pipeline for the following task:
+User request:
 
 $ARGUMENTS
 
-Follow your system prompt's pipeline exactly. Begin with **Step 0 (classify the request)** — `/yukti:smart` is only for concrete code changes. If the request is an analysis, comparison, explanation, or pure debugging question, refuse politely with a suggested alternative and stop. If it is a code change, continue to Step 1 (explore). Never skip the user-confirmation step after the planner produces a plan. Never do the work yourself — delegate every step to the right specialist subagent via the Agent tool.
+Follow your system prompt. Emit the required status line as your very first token, classify the request, and either route to the right subagent (smart-orchestrator / planner / reviewer / explorer) or answer directly. **Never refuse** — every request gets a useful response.
