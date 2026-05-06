@@ -111,6 +111,9 @@ This site **trails** the plugin source. Common drift sources and where to update
 | New tagged release / architecture iteration | `Story.astro` `milestones` array — **append** an entry, don't replace existing ones (the timeline is part of the brand story) |
 | Contribution rules in root `CLAUDE.md` or `CONTRIBUTING.md` | `Contribute.astro` `want` / `dontWant` arrays |
 | Color/font tokens in brand | `src/styles/global.css` — but discuss with user first |
+| New skill in plugin (`/yukti:status`, etc.) | `GetStarted.astro` examples (if user-visible); README skill table is the canonical list — web mirrors it |
+| New hook event registered (`SessionStart`, `UserPromptSubmit`, etc.) | Mention in `WhyUse.astro` if user-visible; skip web update for purely-internal hooks |
+| Project-level state file added (e.g. `.claude/.yukti-state.json`) | No web change needed — site doesn't surface runtime state |
 
 When making a plugin change, **proactively check** which of the above need to follow, and surface drift to the user with the specific file:line references. Never silently update the web copy from a plugin change without flagging it first — the user may want to bundle web changes into a different commit.
 

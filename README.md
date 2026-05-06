@@ -108,7 +108,10 @@ If you want to run individual stages (e.g. just plan, or just review):
 | `/yukti:plan <task>` | Produce plan only | Opus |
 | `/yukti:implement <phase>` | Apply one phase | Sonnet |
 | `/yukti:review` | Review uncommitted diff | Opus |
-| `/yukti:smart <task>` | Full pipeline | mixed |
+| `/yukti:smart <task>` | Full pipeline (auto-routes) | mixed |
+| `/yukti:status [reset]` | Show project brief on demand; `reset` clears in-flight task | (no model) |
+
+A **session brief** also auto-injects on Claude Code start (branch, git status, in-flight Yukti task, memory mechanisms). It complements the auto-loaded `CLAUDE.md` — it doesn't duplicate it. Disable with `"briefEnabled": false` in `.claude/yukti-config.json`.
 
 ## How `/yukti:smart` handles different requests
 
@@ -134,7 +137,8 @@ Optional per-project config at `.claude/yukti-config.json`:
 {
   "capReadLines": 500,
   "stopHookEnabled": true,
-  "verifyCommand": null
+  "verifyCommand": null,
+  "briefEnabled": true
 }
 ```
 
@@ -143,6 +147,7 @@ Optional per-project config at `.claude/yukti-config.json`:
 | `capReadLines` | `500` | Max lines for unbounded Read calls. Set to `0` to disable the cap. |
 | `stopHookEnabled` | `true` | Whether the Stop hook runs typecheck on agent stop. |
 | `verifyCommand` | `null` | Override the auto-detected verification command. Use for non-JS projects (e.g. `"go test ./..."`, `"cargo check"`). |
+| `briefEnabled` | `true` | Whether the SessionStart hook injects a project brief on session start. |
 
 If the config file is absent, defaults apply.
 

@@ -196,6 +196,22 @@ grep -A 6 "^const want = " web/src/components/Contribute.astro 2>/dev/null | gre
 | New architecture iteration / new tagged release | `web/src/components/Story.astro` milestones array — **add a new entry, don't replace existing ones** |
 | Contribution rules in this CLAUDE.md or in CONTRIBUTING.md | `web/src/components/Contribute.astro` `want` / `dontWant` arrays |
 | Model labels (`Haiku`/`Sonnet`/`Opus`) | `web/src/components/Pipeline.astro`; pipeline ASCII art in `README.md`; agent description fields |
+| Hook events registered (`hooks/hooks.json`) | `install.sh` post-install summary; `README.md` "Configuration"; `web/src/components/GetStarted.astro` if hooks are user-visible |
+| New skill added in `skills/` | `README.md` skill table; `install.sh` post-install summary skill list |
+| New config key in `yukti-config.example.json` | `README.md` "Configuration" table; `install.sh`'s default-config heredoc; relevant hook/skill scripts that read it |
+| `bin/session-brief.sh` output format / state file schema | `skills/status/SKILL.md` (must produce equivalent output); `agents/smart-orchestrator.md` (writes the same schema) |
+
+### Yukti-specific runtime state files (project-level)
+
+The plugin writes these at runtime in the user's project — they are NOT source-of-truth, they're scratch state that the user gitignores:
+
+| File | Written by | Read by | Purpose |
+|---|---|---|---|
+| `.claude/yukti-config.json` | user / `install.sh` (defaults) | hooks, scripts, agents | per-project config (capReadLines, briefEnabled, verifyCommand, …) |
+| `.claude/.yukti-state.json` | `smart-orchestrator` between pipeline steps | `bin/session-brief.sh`, `skills/status/SKILL.md` | in-flight task state (lastTask, currentPhase, lastUpdated) |
+| `~/.claude/yukti-telemetry.jsonl` (Phase 3 — not yet implemented) | telemetry hook (v0.2.0+) | `/yukti:status` savings read-out | local-only opt-in usage log |
+
+When changing the schema or output format of any of these, update both writers AND readers in the same logical change.
 
 For the web's own working rules (stack, what's locked, what's editable, performance budget, deploy), see [`web/CLAUDE.md`](web/CLAUDE.md).
 
